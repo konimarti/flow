@@ -16,9 +16,9 @@ type observerInterval struct {
 func NewIntervalObserver(tr Trigger, f ValueFunc, refresh time.Duration) Observer {
 	obs := observerInterval{
 		observerImpl{
-			trigger:   tr,
-			observers: make([]chan interface{}, 0),
-			closing:   make([]*control, 0),
+			trigger: tr,
+			state:   newState(),
+			closing: make([]*control, 0),
 		},
 	}
 	obs.run(time.Tick(refresh), f)

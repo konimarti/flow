@@ -22,3 +22,12 @@ type OnValue struct {
 
 func (t *OnValue) Fire(newValue interface{}) bool { return t.Value == newValue }
 func (t *OnValue) Update(newValue interface{})    {}
+
+// AboveFloat64 struct implements the trigger interface.
+// It triggers when a value is above a predefined value
+type AboveFloat64 struct {
+	Value float64
+}
+
+func (t *AboveFloat64) Fire(newValue interface{}) bool { return newValue.(float64) > t.Value }
+func (t *AboveFloat64) Update(newValue interface{})    {}

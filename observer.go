@@ -1,50 +1,54 @@
 package observer
 
+import "sync"
+
 // observer interface
 type Observer interface {
 	Notify(interface{})
-	Subscribe() chan interface{}
-	Unsubscribe(chan interface{})
+	Subscribe() Subscriber
 	Close()
+}
+
+// state
+type state struct {
+	C     chan interface{}
+	Value interface{}
+	Next  *state
+}
+
+func newState() *state {
+	return &state{C: make(chan interface{})}
 }
 
 //observerImpl implements the observer interface.
 //This should be used in type embedding.
 type observerImpl struct {
-	trigger   Trigger
-	observers []chan interface{}
-	closing   []*control
+	sync.RWMutex
+	trigger Trigger
+	state   *state // tip
+	closing []*control
 }
 
 //Notify sends out the current value in the observer channel
 func (o *observerImpl) Notify(value interface{}) {
-	for _, observer := range o.observers {
-		select {
-		case v := <-observer:
-			// in case channel has been closed,
-			// remove it from the list
-			if v == nil {
-				o.Unsubscribe(observer)
-				continue
-			}
-		default:
-		}
-		observer <- value
-	}
+	o.Lock()
+	defer o.Unlock()
+	o.state.Value = value
+	next := newState()
+	o.state.Next = next
+	close(o.state.C)
+	o.state = o.state.Next
 }
 
-func (o *observerImpl) Subscribe() chan interface{} {
-	observer := make(chan interface{}, 1)
-	o.observers = append(o.observers, observer)
-	return observer
-}
-
-func (o *observerImpl) Unsubscribe(ch chan interface{}) {
-	// not sure if needed
+func (o *observerImpl) Subscribe() Subscriber {
+	o.RLock()
+	defer o.RUnlock()
+	return &subscriber{state: o.state}
 }
 
 //Close closes all the observers channels
 func (o *observerImpl) Close() {
+	// TODO Just one?
 	for _, control := range o.closing {
 		control.Close()
 	}

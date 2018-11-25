@@ -8,9 +8,9 @@ type observerChannel struct {
 func NewChannelObserver(tr Trigger, channel chan interface{}) Observer {
 	obs := observerChannel{
 		observerImpl: observerImpl{
-			trigger:   tr,
-			observers: make([]chan interface{}, 0),
-			closing:   make([]*control, 0),
+			trigger: tr,
+			state:   newState(),
+			closing: make([]*control, 0),
 		},
 	}
 	obs.run(channel)
