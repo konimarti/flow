@@ -13,7 +13,7 @@ func NewChannelObserver(tr Trigger, channel chan interface{}) Observer {
 			closing:   make([]*control, 0),
 		},
 	}
-	obs.run(ch)
+	obs.run(channel)
 	return &obs
 }
 
