@@ -1,7 +1,6 @@
 package observer_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -34,7 +33,6 @@ func TestControl(t *testing.T) {
 		case <-time.After(2 * time.Second):
 			t.Error("Closing timed out.")
 		case <-ch:
-			fmt.Println("breaking out")
 			return
 		}
 	}

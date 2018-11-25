@@ -1,13 +1,12 @@
 package observer
 
 import (
-	"io"
 	"time"
 )
 
 type ValueFunc func() interface{}
 
-//Observer containts the trigger and data gatherer
+//observer contains the information to get a value
 type observer struct {
 	trigger   Trigger
 	fn        ValueFunc
@@ -16,32 +15,41 @@ type observer struct {
 }
 
 //NewObserver creates a new observer struct
-func NewObserver(t Trigger, f ValueFunc) *observer {
-	return &observer{trigger: t, fn: f, observers: make([]chan interface{}, 0), closing: make([]*control, 0)}
+func NewObserver(tr Trigger, f ValueFunc, rf time.Duration) *observer {
+	obs := observer{trigger: tr, fn: f, observers: make([]chan interface{}, 0), closing: make([]*control, 0)}
+	obs.run(rf)
+	return &obs
 }
 
 //Notify sends out the current value in the observer channel
 func (o *observer) Notify(value interface{}) {
 	for _, observer := range o.observers {
 		select {
-		case <-observer:
+		case v := <-observer:
+			// in case channel has been closed,
+			// remove it from the list
+			if v == nil {
+				o.Unsubscribe(observer)
+				continue
+			}
 		default:
 		}
 		observer <- value
 	}
 }
 
-func (o *observer) Channel() chan interface{} {
+func (o *observer) Subscribe() chan interface{} {
 	observer := make(chan interface{}, 1)
 	o.observers = append(o.observers, observer)
 	return observer
 }
 
 func (o *observer) Unsubscribe(ch chan interface{}) {
-	// not implemented yet
+	// not sure if needed
 }
 
-func (o *observer) Observe(refresh time.Duration) io.Closer {
+//run starts the observer
+func (o *observer) run(refresh time.Duration) {
 
 	control := NewControl()
 	o.closing = append(o.closing, control)
@@ -62,8 +70,6 @@ func (o *observer) Observe(refresh time.Duration) io.Closer {
 			}
 		}
 	}()
-
-	return control
 }
 
 //Close closes all the observers channels

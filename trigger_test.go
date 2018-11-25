@@ -6,7 +6,7 @@ import (
 	"github.com/konimarti/observer"
 )
 
-var config = []struct {
+var configT = []struct {
 	Value  interface{}
 	Update interface{}
 }{
@@ -25,7 +25,7 @@ var config = []struct {
 }
 
 func TestOnChange(t *testing.T) {
-	for _, cfg := range config {
+	for _, cfg := range configT {
 		//new trigger
 		trig := observer.OnChange{}
 		trig.Update(cfg.Value)
@@ -47,7 +47,7 @@ func TestOnChange(t *testing.T) {
 }
 
 func TestOnValue(t *testing.T) {
-	for _, cfg := range config {
+	for _, cfg := range configT {
 		//new trigger
 		trig := observer.OnValue{Value: cfg.Value}
 
