@@ -32,15 +32,15 @@ func main() {
 	ch := make(chan interface{})
 
 	// create channel-based observer and set an OnValue trigger.
-	// The observer will send notifications every time the defined value 3
+	// The observer will send notifications every time the value 3
 	// is send through the channel.
 	monitor := observer.NewFromChannel(&observer.OnValue{3}, ch)
 	defer monitor.Close()
 
-	// syncrhoniztion
+	// synchronization
 	var wg sync.WaitGroup
 
-	// publisher: random numbers to be added in irregular intervals
+	// publishers
 	wg.Add(2)
 
 	go publisher(1, ch, &wg)
