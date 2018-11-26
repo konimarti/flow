@@ -1,9 +1,9 @@
-package observer_test
+package notifiers_test
 
 import (
 	"testing"
 
-	"github.com/konimarti/observer"
+	"github.com/konimarti/observer/notifiers"
 )
 
 var configT = []struct {
@@ -31,7 +31,7 @@ var configT = []struct {
 func TestOnChange(t *testing.T) {
 	for _, cfg := range configT {
 		//new trigger
-		trig := observer.OnChange{}
+		trig := notifiers.OnChange{}
 		trig.Update(cfg.Value)
 
 		//test check
@@ -53,7 +53,7 @@ func TestOnChange(t *testing.T) {
 func TestOnValue(t *testing.T) {
 	for _, cfg := range configT {
 		//new trigger
-		trig := observer.OnValue{Value: cfg.Value}
+		trig := notifiers.OnValue{Value: cfg.Value}
 
 		//test check
 		if !trig.Check(cfg.Value) {
@@ -77,7 +77,7 @@ func TestAboveFloat64(t *testing.T) {
 			continue
 		}
 		//new trigger
-		trig := observer.AboveFloat64{Value: cfg.Value.(float64)}
+		trig := notifiers.AboveFloat64{Value: cfg.Value.(float64)}
 
 		//test check
 		if trig.Check(cfg.Value) {
@@ -101,7 +101,7 @@ func TestBelowFloat64(t *testing.T) {
 			continue
 		}
 		//new trigger
-		trig := observer.BelowFloat64{Value: cfg.Update.(float64)}
+		trig := notifiers.BelowFloat64{Value: cfg.Update.(float64)}
 
 		//test check
 		if trig.Check(cfg.Update) {

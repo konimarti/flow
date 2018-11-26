@@ -2,6 +2,8 @@ package observer
 
 import (
 	"time"
+
+	"github.com/konimarti/observer/notifiers"
 )
 
 // ValueFunc is the type of function to pass to the observer intsance to retrieve the next value
@@ -13,12 +15,12 @@ type observerFunction struct {
 }
 
 //NewFromFunction creates a new observer struct
-func NewFromFunction(tr Trigger, f ValueFunc, refresh time.Duration) Observer {
+func NewFromFunction(nf notifiers.Notifier, f ValueFunc, refresh time.Duration) Observer {
 	obs := observerFunction{
 		observerImpl{
-			control: newControl(),
-			trigger: tr,
-			state:   newState(),
+			control:  newControl(),
+			notifier: nf,
+			state:    newState(),
 		},
 	}
 	obs.run(time.Tick(refresh), f)
@@ -32,9 +34,9 @@ func (o *observerFunction) run(c <-chan time.Time, fn ValueFunc) {
 		for {
 			select {
 			case <-c:
-				if v := fn(); o.observerImpl.trigger.Check(v) {
+				if v := fn(); o.observerImpl.notifier.Check(v) {
 					o.Notify(v)
-					o.trigger.Update(v)
+					o.notifier.Update(v)
 				}
 			case <-o.control.C:
 				o.control.D <- true

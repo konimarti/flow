@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
 
-Flexible Observer pattern for Golang with a trigger-based notification behavior.
+Flexible Observer pattern for Golang with a modular notification behavior.
 
 ```go get github.com/konimarti/observer```
 
@@ -15,13 +15,13 @@ Two type of observers are implemented suitable for different use cases:
 
 Channel-based observers are suitable in cases where we have control over the code and receive specific events. Function-based observer can monitor any object or state of resources (i.e. OPC servers without call-backs).
 
-The triggers control the behavior of the observer implementation and determines when to notify the observers. 
-This gives a large flexibility and covers specific use cases with user-defined triggers.
-The following triggers are currently implemented in this package:
-- OnChange: Triggers when the value changes.
-- OnValue: Triggers when the new value matches the initialized value.
-- AboveFloat64: Triggers when a new float64 is above the initialized float64 threshold.
-- BelowFloat64: Triggers when a new float64 is below the initialized float64 threshold.
+The notifiers control the behavior of the observer implementation and determines when to notify the observers. 
+This gives a large flexibility and covers specific use cases with user-defined notifications.
+The following notifiers are currently implemented in this package:
+- OnChange: Notifies when the value changes.
+- OnValue: Notifies when the new value matches the initialized value.
+- AboveFloat64: Notifies when a new float64 is above the initialized float64 threshold.
+- BelowFloat64: Notifies when a new float64 is below the initialized float64 threshold.
 
 ## Example with a channel-based observer
 
@@ -35,6 +35,7 @@ import (
 	"time"
 
 	"github.com/konimarti/observer"
+	"github.com/konimarti/observer/notifiers"
 )
 
 func main() {
@@ -42,15 +43,15 @@ func main() {
 	ch := make(chan interface{})
 
 	// create channel-based observer and set an OnValue trigger.
-	// The observer will send notifications every time the value 3
+	// The observer will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := observer.NewFromChannel(&observer.OnValue{3}, ch)
+	monitor := observer.NewFromChannel(&notifiers.OnValue{3}, ch)
 	defer monitor.Close()
 
-	// synchronization
+	// syncrhoniztion
 	var wg sync.WaitGroup
 
-	// publishers
+	// publisher: random numbers to be added in irregular intervals
 	wg.Add(2)
 
 	go publisher(1, ch, &wg)
@@ -108,13 +109,14 @@ import (
 	"time"
 
 	"github.com/konimarti/observer"
+	"github.com/konimarti/observer/notifiers"
 )
 
 func main() {
 	start := time.Now()
 	freq := 0.05
 
-	// define sinus function 
+	// define sinus function
 	sinfct := func() interface{} {
 		sec := float64(time.Since(start).Seconds())
 		sin := math.Sin(2.0 * math.Pi * freq * sec)
@@ -122,10 +124,10 @@ func main() {
 		return sin
 	}
 
-	// create function-based observer and set an AboveFloat64 trigger to send a notification
+	// create function-based observer and set an AboveFloat64 notifier to send a notification
 	// everytime the sinus function returns a value greater than 0.9.
 	// The sinus function is evaluated every second.
-	monitor := observer.NewFromFunction(&observer.AboveFloat64{0.9}, sinfct, 1*time.Second)
+	monitor := observer.NewFromFunction(&notifiers.AboveFloat64{0.9}, sinfct, 1*time.Second)
 	defer monitor.Close()
 
 	// subscribers
@@ -140,7 +142,7 @@ func main() {
 
 func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
-	for {
+	for i := 0; i < 20; i++ {
 		<-sub.Event()
 		fmt.Printf("Subscriber id(%d) got notified: %2.4f\n", id, sub.Value().(float64))
 		sub.Next()

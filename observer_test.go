@@ -1,6 +1,8 @@
 package observer_test
 
-import "github.com/konimarti/observer"
+import (
+	"github.com/konimarti/observer/notifiers"
+)
 
 var config = []struct {
 	Values []interface{}
@@ -22,18 +24,18 @@ var config = []struct {
 
 var observers = []struct {
 	Name   string
-	TrFunc func(v interface{}) observer.Trigger
+	TrFunc func(v interface{}) notifiers.Notifier
 }{
 	{
 		Name: "OnChange",
-		TrFunc: func(v interface{}) observer.Trigger {
-			return &observer.OnChange{v}
+		TrFunc: func(v interface{}) notifiers.Notifier {
+			return &notifiers.OnChange{v}
 		},
 	},
 	{
 		Name: "OnValue",
-		TrFunc: func(v interface{}) observer.Trigger {
-			return &observer.OnValue{v}
+		TrFunc: func(v interface{}) notifiers.Notifier {
+			return &notifiers.OnValue{v}
 		},
 	},
 }

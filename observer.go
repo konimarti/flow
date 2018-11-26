@@ -1,6 +1,10 @@
 package observer
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/konimarti/observer/notifiers"
+)
 
 // Observer defines the observe interface
 type Observer interface {
@@ -25,7 +29,7 @@ func newState() *state {
 type observerImpl struct {
 	sync.RWMutex //embedded
 	control      //embedded
-	trigger      Trigger
+	notifier     notifiers.Notifier
 	state        *state
 }
 

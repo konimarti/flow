@@ -1,16 +1,18 @@
 package observer
 
+import "github.com/konimarti/observer/notifiers"
+
 type observerChannel struct {
 	observerImpl
 }
 
 //NewFromChannel creates a new observer struct
-func NewFromChannel(tr Trigger, channel chan interface{}) Observer {
+func NewFromChannel(nf notifiers.Notifier, channel chan interface{}) Observer {
 	obs := observerChannel{
 		observerImpl: observerImpl{
-			control: newControl(),
-			trigger: tr,
-			state:   newState(),
+			control:  newControl(),
+			notifier: nf,
+			state:    newState(),
 		},
 	}
 	obs.run(channel)
@@ -24,9 +26,9 @@ func (o *observerChannel) run(ch chan interface{}) {
 		for {
 			select {
 			case v := <-ch:
-				if o.observerImpl.trigger.Check(v) {
+				if o.observerImpl.notifier.Check(v) {
 					o.Notify(v)
-					o.trigger.Update(v)
+					o.notifier.Update(v)
 				}
 			case <-o.control.C:
 				o.control.D <- true
