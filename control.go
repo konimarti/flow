@@ -15,6 +15,8 @@ func (c *control) Close() {
 	}
 }
 
-func NewControl() control {
+//newControl creates a new control structure for graceful closing
+//of the observer run loop
+func newControl() control {
 	return control{C: make(chan bool), D: make(chan bool)}
 }

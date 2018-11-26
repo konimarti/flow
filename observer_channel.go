@@ -8,7 +8,7 @@ type observerChannel struct {
 func NewFromChannel(tr Trigger, channel chan interface{}) Observer {
 	obs := observerChannel{
 		observerImpl: observerImpl{
-			control: NewControl(),
+			control: newControl(),
 			trigger: tr,
 			state:   newState(),
 		},

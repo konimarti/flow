@@ -1,14 +1,12 @@
-package observer_test
+package observer
 
 import (
 	"testing"
 	"time"
-
-	"github.com/konimarti/observer"
 )
 
 func TestControl(t *testing.T) {
-	control := observer.NewControl()
+	control := newControl()
 	go func() {
 		for {
 			select {

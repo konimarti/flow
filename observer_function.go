@@ -16,7 +16,7 @@ type observerFunction struct {
 func NewFromFunction(tr Trigger, f ValueFunc, refresh time.Duration) Observer {
 	obs := observerFunction{
 		observerImpl{
-			control: NewControl(),
+			control: newControl(),
 			trigger: tr,
 			state:   newState(),
 		},

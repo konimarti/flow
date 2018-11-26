@@ -1,6 +1,7 @@
 package observer
 
-// subscriber are not concurrent safe
+// Subscriber describes the interface
+// returned by subscribing to an observer
 type Subscriber interface {
 	Value() interface{}
 	Event() chan interface{}

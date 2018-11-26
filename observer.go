@@ -2,7 +2,7 @@ package observer
 
 import "sync"
 
-// observer interface
+// Observer defines the observe interface
 type Observer interface {
 	Notify(interface{})
 	Subscribe() Subscriber
