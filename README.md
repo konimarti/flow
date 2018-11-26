@@ -1,4 +1,9 @@
 # Observer in Go
+
+[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/observer/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
+[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
+
 Flexible Observer pattern for Golang with a trigger-based notification behavior.
 
 ```go get github.com/konimarti/observer```
