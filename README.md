@@ -1,5 +1,5 @@
 # Observer in Go
-Implementation of the observer pattern for Golang based on different \"triggers\" which control the notification behavior of the observers.
+Flexible Observer pattern for Golang with a trigger-based notification behavior.
 
 ```go get github.com/konimarti/observer```
 
