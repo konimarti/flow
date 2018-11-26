@@ -43,3 +43,15 @@ func (t *AboveFloat64) Check(newValue interface{}) bool { return newValue.(float
 
 //Update handles a new value depending on the trigger implementation
 func (t *AboveFloat64) Update(newValue interface{}) {}
+
+// BelowFloat64 struct implements the trigger interface.
+// It triggers when a value is below a predefined value
+type BelowFloat64 struct {
+	Value float64
+}
+
+//Check returns true if the observers should be notified
+func (t *BelowFloat64) Check(newValue interface{}) bool { return newValue.(float64) < t.Value }
+
+//Update handles a new value depending on the trigger implementation
+func (t *BelowFloat64) Update(newValue interface{}) {}

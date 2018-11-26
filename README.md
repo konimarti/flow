@@ -17,6 +17,11 @@ Channel-based observers are suitable in cases where we have control over the cod
 
 The triggers control the behavior of the observer implementation and determines when to notify the observers. 
 This gives a large flexibility and covers specific use cases with user-defined triggers.
+The following triggers are currently implemented in this package:
+- OnChange: Triggers when the value changes.
+- OnValue: Triggers when the new value matches the initialized value.
+- AboveFloat64: Triggers when a new float64 is above the initialized float64 threshold.
+- BelowFloat64: Triggers when a new float64 is below the initialized float64 threshold.
 
 ## Example with a channel-based observer
 
