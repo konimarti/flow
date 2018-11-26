@@ -23,10 +23,10 @@ func newState() *state {
 //observerImpl implements the observer interface.
 //This should be used in type embedding.
 type observerImpl struct {
-	sync.RWMutex
-	trigger Trigger
-	state   *state // tip
-	closing []*control
+	sync.RWMutex //embedded
+	control      //embedded
+	trigger      Trigger
+	state        *state
 }
 
 //Notify sends out the current value in the observer channel
@@ -40,16 +40,9 @@ func (o *observerImpl) Notify(value interface{}) {
 	o.state = o.state.Next
 }
 
+//Subscribe returns a new subscriber to access values and listens for events
 func (o *observerImpl) Subscribe() Subscriber {
 	o.RLock()
 	defer o.RUnlock()
 	return &subscriber{state: o.state}
-}
-
-//Close closes all the observers channels
-func (o *observerImpl) Close() {
-	// TODO Just one?
-	for _, control := range o.closing {
-		control.Close()
-	}
 }

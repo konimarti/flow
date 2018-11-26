@@ -4,13 +4,13 @@ type observerChannel struct {
 	observerImpl
 }
 
-//NewIntervalObserver creates a new observer struct
-func NewChannelObserver(tr Trigger, channel chan interface{}) Observer {
+//NewFromChannel creates a new observer struct
+func NewFromChannel(tr Trigger, channel chan interface{}) Observer {
 	obs := observerChannel{
 		observerImpl: observerImpl{
+			control: NewControl(),
 			trigger: tr,
 			state:   newState(),
-			closing: make([]*control, 0),
 		},
 	}
 	obs.run(channel)
@@ -20,19 +20,16 @@ func NewChannelObserver(tr Trigger, channel chan interface{}) Observer {
 //run starts the observer with interval and fn
 func (o *observerChannel) run(ch chan interface{}) {
 
-	control := NewControl()
-	o.observerImpl.closing = append(o.observerImpl.closing, control)
-
 	go func() {
 		for {
 			select {
 			case v := <-ch:
-				if o.observerImpl.trigger.Fire(v) {
+				if o.observerImpl.trigger.Check(v) {
 					o.Notify(v)
 					o.trigger.Update(v)
 				}
-			case <-control.C:
-				control.D <- true
+			case <-o.control.C:
+				o.control.D <- true
 				return
 			}
 		}

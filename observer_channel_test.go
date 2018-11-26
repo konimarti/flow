@@ -35,7 +35,8 @@ func TestChannelObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewChannelObserver(observerCfg.TrFunc(start), ch)
+			observer := observer.NewFromChannel(observerCfg.TrFunc(start), ch)
+			subscriber := observer.Subscribe()
 			startC <- true
 
 			// run test
@@ -43,11 +44,13 @@ func TestChannelObservers(t *testing.T) {
 			case <-time.After(1 * time.Second):
 				str := fmt.Sprintf("%s: Timed out waiting for channel.", observerCfg.Name)
 				t.Fatal(str)
-			case received := <-observer.Subscribe():
+			case <-subscriber.Event():
+				received := subscriber.Value()
 				if received != cfg.Want {
 					str := fmt.Sprintf("%s: Got %v. Expected %v", observerCfg.Name, received, cfg.Want)
 					t.Fatal(str)
 				}
+				subscriber.Next()
 			}
 
 			// close

@@ -10,18 +10,21 @@ import (
 )
 
 func main() {
-	// set up function
 	start := time.Now()
 	freq := 0.05
-	fn := func() interface{} {
+
+	// define sinus function
+	sinfct := func() interface{} {
 		sec := float64(time.Since(start).Seconds())
 		sin := math.Sin(2.0 * math.Pi * freq * sec)
-		fmt.Printf("t = %2.2f    sin(t) = %2.4f\n", sec, sin)
+		fmt.Printf("x = %2.2f, sin(x) = %2.4f\n", sec, sin)
 		return sin
 	}
 
-	// create channel observer and use OnValue trigger
-	monitor := observer.NewIntervalObserver(&observer.AboveFloat64{0.9}, fn, 1*time.Second)
+	// create function-based observer and set an AboveFloat64 trigger to send a notification
+	// everytime the sinus function returns a value greater than 0.9.
+	// The sinus function is evaluated every second.
+	monitor := observer.NewFromFunction(&observer.AboveFloat64{0.9}, sinfct, 1*time.Second)
 	defer monitor.Close()
 
 	// subscribers

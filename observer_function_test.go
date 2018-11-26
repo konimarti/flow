@@ -37,18 +37,20 @@ func TestIntervalObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewIntervalObserver(observerCfg.TrFunc(start), fn, refresh)
-
+			observer := observer.NewFromFunction(observerCfg.TrFunc(start), fn, refresh)
+			subscriber := observer.Subscribe()
 			// run test
 			select {
 			case <-time.After(1 * time.Second):
 				str := fmt.Sprintf("%s: Timed out waiting for channel.", observerCfg.Name)
 				t.Fatal(str)
-			case received := <-observer.Subscribe():
+			case <-subscriber.Event():
+				received := subscriber.Value()
 				if received != cfg.Want {
 					str := fmt.Sprintf("%s: Got %v. Expected %v", observerCfg.Name, received, cfg.Want)
 					t.Fatal(str)
 				}
+				subscriber.Next()
 			}
 
 			// close

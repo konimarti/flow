@@ -11,18 +11,24 @@ import (
 
 func main() {
 	// set up channel
-	ch := make(chan interface{}, 0)
+	ch := make(chan interface{})
 
-	// create channel observer and use OnValue trigger
-	monitor := observer.NewChannelObserver(&observer.OnValue{3}, ch)
+	// create channel-based observer and set an OnValue trigger.
+	// The observer will send notifications every time the defined value 3
+	// is send through the channel.
+	monitor := observer.NewFromChannel(&observer.OnValue{3}, ch)
 	defer monitor.Close()
 
+	// syncrhoniztion
+	var wg sync.WaitGroup
+
 	// publisher: random numbers to be added in irregular intervals
-	go publisher(1, ch)
-	go publisher(2, ch)
+	wg.Add(2)
+
+	go publisher(1, ch, &wg)
+	go publisher(2, ch, &wg)
 
 	// subscribers
-	var wg sync.WaitGroup
 	wg.Add(2)
 
 	go subscriber(1, monitor, &wg)
@@ -31,7 +37,7 @@ func main() {
 	wg.Wait()
 }
 
-func publisher(id int, ch chan interface{}) {
+func publisher(id int, ch chan interface{}, wg *sync.WaitGroup) {
 	var counter int
 	for {
 		val := rand.Intn(4)
@@ -40,16 +46,22 @@ func publisher(id int, ch chan interface{}) {
 		}
 		ch <- val
 		sleep := rand.Intn(2)
-		fmt.Printf("Publishing id(%d) [%d]: %v (sleep for %ds)\n", id, counter, val, sleep)
+
+		fmt.Printf("Publisher %d sends: value = %v, counts = %d, sleeps = %d sec \n", id, val, counter, sleep)
 		time.Sleep(time.Duration(sleep) * time.Second)
+
+		if counter >= 5 {
+			break
+		}
 	}
+	wg.Done()
 }
 
 func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 1; i < 10; i++ {
 		<-sub.Event()
-		fmt.Printf("Subscriber id(%d) got notified [%d]: %v\n", id, i, sub.Value())
+		fmt.Printf("Subscriber %d got notified: value = %v, counts = %d\n", id, sub.Value(), i)
 		sub.Next()
 	}
 	wg.Done()

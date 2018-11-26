@@ -8,14 +8,13 @@ type control struct {
 }
 
 //Close function closes the channel and waits for the done channel.
-func (c *control) Close() error {
+func (c *control) Close() {
 	if c.C != nil && c.D != nil {
 		c.C <- true
 		<-c.D
 	}
-	return nil
 }
 
-func NewControl() *control {
-	return &control{C: make(chan bool), D: make(chan bool)}
+func NewControl() control {
+	return control{C: make(chan bool), D: make(chan bool)}
 }

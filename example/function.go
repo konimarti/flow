@@ -22,7 +22,7 @@ func main() {
 	}
 
 	// create channel observer and use OnValue trigger
-	monitor := observer.NewIntervalObserver(&observer.OnValue{3}, fn, 10*time.Millisecond)
+	monitor := observer.NewFromFunction(&observer.OnValue{3}, fn, 10*time.Millisecond)
 	defer monitor.Close()
 
 	// subscribers
