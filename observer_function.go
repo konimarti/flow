@@ -3,7 +3,7 @@ package observer
 import (
 	"time"
 
-	"github.com/konimarti/observer/notifiers"
+	"github.com/konimarti/observer/filters"
 )
 
 // ValueFunc is the type of function to pass to the observer intsance to retrieve the next value
@@ -15,12 +15,12 @@ type observerFunction struct {
 }
 
 //NewFromFunction creates a new observer struct
-func NewFromFunction(nf notifiers.Notifier, f ValueFunc, refresh time.Duration) Observer {
+func NewFromFunction(nf filters.Filter, f ValueFunc, refresh time.Duration) Observer {
 	obs := observerFunction{
 		observerImpl{
-			control:  newControl(),
-			notifier: nf,
-			state:    newState(),
+			control: newControl(),
+			filter:  nf,
+			state:   newState(),
 		},
 	}
 	obs.run(time.Tick(refresh), f)
@@ -34,9 +34,8 @@ func (o *observerFunction) run(c <-chan time.Time, fn ValueFunc) {
 		for {
 			select {
 			case <-c:
-				if v := fn(); o.observerImpl.notifier.Check(v) {
-					o.Notify(v)
-					o.notifier.Update(v)
+				if v := fn(); o.observerImpl.filter.Check(v) {
+					o.Notify(o.filter.Update(v))
 				}
 			case <-o.control.C:
 				o.control.D <- true

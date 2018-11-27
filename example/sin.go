@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/notifiers"
+	"github.com/konimarti/observer/filters"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	// create function-based observer and set an AboveFloat64 notifier to send a notification
 	// everytime the sinus function returns a value greater than 0.9.
 	// The sinus function is evaluated every second.
-	monitor := observer.NewFromFunction(&notifiers.AboveFloat64{0.9}, sinfct, 1*time.Second)
+	monitor := observer.NewFromFunction(&filters.AboveFloat64{0.9}, sinfct, 1*time.Second)
 	defer monitor.Close()
 
 	// subscribers

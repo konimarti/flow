@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/notifiers"
+	"github.com/konimarti/observer/filters"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// create channel observer and use OnValue trigger
-	monitor := observer.NewFromFunction(&notifiers.OnValue{3}, fn, 10*time.Millisecond)
+	monitor := observer.NewFromFunction(&filters.OnValue{3}, fn, 10*time.Millisecond)
 	defer monitor.Close()
 
 	// subscribers

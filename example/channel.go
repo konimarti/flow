@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/notifiers"
+	"github.com/konimarti/observer/filters"
 )
 
 func main() {
@@ -17,7 +17,7 @@ func main() {
 	// create channel-based observer and set an OnValue trigger.
 	// The observer will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := observer.NewFromChannel(&notifiers.OnValue{3}, ch)
+	monitor := observer.NewFromChannel(&filters.OnValue{3}, ch)
 	defer monitor.Close()
 
 	// syncrhoniztion

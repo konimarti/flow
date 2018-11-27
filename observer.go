@@ -3,7 +3,7 @@ package observer
 import (
 	"sync"
 
-	"github.com/konimarti/observer/notifiers"
+	"github.com/konimarti/observer/filters"
 )
 
 // Observer defines the observe interface
@@ -29,7 +29,7 @@ func newState() *state {
 type observerImpl struct {
 	sync.RWMutex //embedded
 	control      //embedded
-	notifier     notifiers.Notifier
+	filter       filters.Filter
 	state        *state
 }
 
