@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
 
-Flexible Observer pattern for Golang with a modular notification behavior based on filters.
+Stream-processing Observer pattern for Golang with a modular notification behavior based on filters.
 
 ```go get github.com/konimarti/observer```
 
@@ -19,11 +19,12 @@ Function-based observer can monitor any object or state of resources (i.e. OPC s
 The filters control the behavior of the observers, i.e. they determine what value would trigger the notification of the subscribed observers.  
 This gives a large flexibility and covers specific use cases with user-defined filters.
 The following notifiers are currently implemented in this package:
-- OnChange: Notifies when the value changes.
-- OnValue: Notifies when the new value matches the initialized value.
-- AboveFloat64: Notifies when a new float64 is above the initialized float64 threshold.
-- BelowFloat64: Notifies when a new float64 is below the initialized float64 threshold.
-- MovingAverage: Calculates the moving average over a certain sample sizes and informs all observers with the current value.
+- ```None```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
+- ```OnChange```: Notifies when the value changes.
+- ```OnValue```: Notifies when the new value matches the initialized value.
+- ```AboveFloat64```: Notifies when a new float64 is above the initialized float64 threshold.
+- ```BelowFloat64```: Notifies when a new float64 is below the initialized float64 threshold.
+- ```MovingAverage```: Calculates the moving average over a certain sample sizes and informs all observers about the current mean.
 
 ## Usage
 
@@ -82,8 +83,16 @@ type Observer interface {
 }
 ```
 
+* Subscriber interface:
+```
+type Subscriber interface {
+	Value() interface{}
+	Event() chan interface{}
+	Next()
+}
+```
 
-* Filters interface:
+* Filter interface:
 ```
 type Filter interface {
 	Check(interface{}) bool

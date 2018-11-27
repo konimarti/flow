@@ -29,6 +29,27 @@ var configT = []struct {
 	},
 }
 
+func TestNone(t *testing.T) {
+	for _, cfg := range configT {
+		//new trigger
+		trig := filters.None{}
+		trig.Update(cfg.Value)
+
+		//test check
+		if !trig.Check(cfg.Value) {
+			t.Error("should fire because all values are processed")
+		}
+		if !trig.Check(cfg.Update) {
+			t.Error("should fire because all values are processed")
+		}
+
+		//test update
+		if cfg.Update != trig.Check(cfg.Update) && cfg.Value != trig.Check(cfg.Value) {
+			t.Error("should return same values as it was called with")
+		}
+	}
+}
+
 func TestOnChange(t *testing.T) {
 	for _, cfg := range configT {
 		//new trigger
@@ -125,7 +146,7 @@ func TestMovingAverage(t *testing.T) {
 	mvavg := []float64{1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0}
 
 	//new trigger
-	trig := filters.MovingAverage{Size: 5}
+	trig := filters.NewMovingAverage(5)
 
 	for i, v := range values {
 
