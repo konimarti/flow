@@ -1,6 +1,7 @@
 package filters_test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/konimarti/observer/filters"
@@ -115,6 +116,28 @@ func TestBelowFloat64(t *testing.T) {
 		trig.Update(cfg.Value)
 		if trig.Value != cfg.Update {
 			t.Error("update should not change initial, predefined value.")
+		}
+	}
+}
+
+func TestMovingAverage(t *testing.T) {
+	values := []float64{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}
+	mvavg := []float64{1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0}
+
+	//new trigger
+	trig := filters.MovingAverage{Size: 5}
+
+	for i, v := range values {
+
+		//test check
+		if !trig.Check(v) {
+			t.Error("should always fire")
+		}
+
+		//test update
+		mv := trig.Update(v)
+		if math.Abs(mvavg[i]-mv.(float64)) > 1e-6 {
+			t.Error("moving average not calculated correctly")
 		}
 	}
 }

@@ -4,152 +4,96 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
 
-Flexible Observer pattern for Golang with a modular notification behavior.
+Flexible Observer pattern for Golang with a modular notification behavior based on filters.
 
 ```go get github.com/konimarti/observer```
 
-## Notes on the implementations
-Two type of observers are implemented suitable for different use cases:
+## Implementation Notes
+Two types of observers are implemented which are suitable for different use cases:
 * Channel-based observers accept new values through a ```chan interface{}``` channel, and
 * Function-based observers that collect new values in regular intervals from a ```func() interface{}``` function.
 
-Channel-based observers are suitable in cases where we have control over the code and receive specific events. Function-based observer can monitor any object or state of resources (i.e. OPC servers without call-backs).
+Channel-based observers are suitable in cases where we have control over the code and receive specific events. 
+Function-based observer can monitor any object or state of resources (i.e. OPC servers without call-backs).
 
-The notifiers control the behavior of the observer implementation and determines when to notify the observers. 
-This gives a large flexibility and covers specific use cases with user-defined notifications.
+The filters control the behavior of the observers, i.e. they determine what value would trigger the notification of the subscribed observers.  
+This gives a large flexibility and covers specific use cases with user-defined filters.
 The following notifiers are currently implemented in this package:
 - OnChange: Notifies when the value changes.
 - OnValue: Notifies when the new value matches the initialized value.
 - AboveFloat64: Notifies when a new float64 is above the initialized float64 threshold.
 - BelowFloat64: Notifies when a new float64 is below the initialized float64 threshold.
+- MovingAverage: Calculates the moving average over a certain sample sizes and informs all observers with the current value.
 
-## Example with a channel-based observer
+## Usage
+
+* To get a channel-based observer:
+```
+// define channel
+ch := make(chan interface{})
+
+// define filter
+filter := filters.OnChange{}
+
+// create observer
+obs := observer.NewFromChannel(&filter, chan interface{})
+
+// publish new data to channel ch
+// ch <- ..
+```
+
+* To get a function-based observer:
+```
+// define a function that returns the values
+fn := func() interface{} {
+	return rand.Float64()
+}
+
+// define filter
+filter := filters.OnChange{}
+
+// create observer
+obs := observer.NewFromChannel(&filter, fn, 1 * time.Second)
+```
+
+* Subscribers can subscribe to a observer and receive events that are triggered by the filter used in the observer:
+```
+// subscribers
+subscriber := obs.Subscribe()
+for {
+	// wait for event
+	<-subscriber.Event()
+	// get value that triggered event
+	subscriber.Value()
+	// advance to next
+	subscriber.Next()
+}
 
 ```
-package main
 
-import (
-	"fmt"
-	"math/rand"
-	"sync"
-	"time"
+## Interfaces
 
-	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/notifiers"
-)
-
-func main() {
-	// set up channel
-	ch := make(chan interface{})
-
-	// create channel-based observer and set an OnValue trigger.
-	// The observer will send notifications every time the defined value 3
-	// is send through the channel.
-	monitor := observer.NewFromChannel(&notifiers.OnValue{3}, ch)
-	defer monitor.Close()
-
-	// syncrhoniztion
-	var wg sync.WaitGroup
-
-	// publisher: random numbers to be added in irregular intervals
-	wg.Add(2)
-
-	go publisher(1, ch, &wg)
-	go publisher(2, ch, &wg)
-
-	// subscribers
-	wg.Add(2)
-
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
-
-	wg.Wait()
-}
-
-func publisher(id int, ch chan interface{}, wg *sync.WaitGroup) {
-	var counter int
-	for {
-		val := rand.Intn(4)
-		if val == 3 {
-			counter++
-		}
-		ch <- val
-		sleep := rand.Intn(2)
-
-		fmt.Printf("Publisher %d sends: value = %v, counts = %d, sleeps = %d sec \n", id, val, counter, sleep)
-		time.Sleep(time.Duration(sleep) * time.Second)
-
-		if counter >= 5 {
-			break
-		}
-	}
-	wg.Done()
-}
-
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
-	sub := monitor.Subscribe()
-	for i := 1; i < 10; i++ {
-		<-sub.Event()
-		fmt.Printf("Subscriber %d got notified: value = %v, counts = %d\n", id, sub.Value(), i)
-		sub.Next()
-	}
-	wg.Done()
+* Observer interface:
+```
+type Observer interface {
+	Notify(interface{})
+	Subscribe() Subscriber
+	Close()
 }
 ```
 
-## Example with a function-based observer
 
+* Filters interface:
 ```
-package main
-
-import (
-	"fmt"
-	"math"
-	"sync"
-	"time"
-
-	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/notifiers"
-)
-
-func main() {
-	start := time.Now()
-	freq := 0.05
-
-	// define sinus function
-	sinfct := func() interface{} {
-		sec := float64(time.Since(start).Seconds())
-		sin := math.Sin(2.0 * math.Pi * freq * sec)
-		fmt.Printf("x = %2.2f, sin(x) = %2.4f\n", sec, sin)
-		return sin
-	}
-
-	// create function-based observer and set an AboveFloat64 notifier to send a notification
-	// everytime the sinus function returns a value greater than 0.9.
-	// The sinus function is evaluated every second.
-	monitor := observer.NewFromFunction(&notifiers.AboveFloat64{0.9}, sinfct, 1*time.Second)
-	defer monitor.Close()
-
-	// subscribers
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
-
-	wg.Wait()
-}
-
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
-	sub := monitor.Subscribe()
-	for i := 0; i < 20; i++ {
-		<-sub.Event()
-		fmt.Printf("Subscriber id(%d) got notified: %2.4f\n", id, sub.Value().(float64))
-		sub.Next()
-	}
-	wg.Done()
+type Filter interface {
+	Check(interface{}) bool
+	Update(interface{}) interface{}
 }
 ```
+
+## Examples
+
+See different examples [here](https://github.com/konimarti/observer/tree/master/example).
 
 ## Credits
 

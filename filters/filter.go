@@ -51,7 +51,7 @@ func (t *AboveFloat64) Update(newValue interface{}) interface{} {
 	return newValue
 }
 
-// BelowFloat64 struct implements the trigger interface.
+// BelowFloat64 struct implements the Filter interface.
 // It triggers when a value is below a predefined value.
 type BelowFloat64 struct {
 	Value float64
@@ -63,4 +63,27 @@ func (t *BelowFloat64) Check(newValue interface{}) bool { return newValue.(float
 //Update handles a new value depending on the Filter.
 func (t *BelowFloat64) Update(newValue interface{}) interface{} {
 	return newValue
+}
+
+// MovingAverage struct implements the Filter interface.
+// It triggers when a value is below a predefined value.
+type MovingAverage struct {
+	Size   int
+	values []float64
+}
+
+//Check returns true if the observers should be notified.
+func (t *MovingAverage) Check(newValue interface{}) bool { return true }
+
+//Update handles a new value depending on the Filter.
+func (t *MovingAverage) Update(newValue interface{}) interface{} {
+	t.values = append(t.values, newValue.(float64))
+	if len(t.values) > t.Size {
+		t.values = t.values[len(t.values)-t.Size:]
+	}
+	var movingAverage float64
+	for _, v := range t.values {
+		movingAverage += v
+	}
+	return movingAverage / float64(len(t.values))
 }
