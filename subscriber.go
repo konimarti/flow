@@ -4,7 +4,7 @@ package observer
 // returned by subscribing to an observer
 type Subscriber interface {
 	Value() interface{}
-	Event() chan interface{}
+	Event() chan struct{}
 	Next()
 }
 
@@ -16,7 +16,7 @@ func (s *subscriber) Value() interface{} {
 	return s.state.Value
 }
 
-func (s *subscriber) Event() chan interface{} {
+func (s *subscriber) Event() chan struct{} {
 	return s.state.C
 }
 

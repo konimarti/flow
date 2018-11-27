@@ -15,13 +15,13 @@ type Observer interface {
 
 // state
 type state struct {
-	C     chan interface{}
+	C     chan struct{}
 	Value interface{}
 	Next  *state
 }
 
 func newState() *state {
-	return &state{C: make(chan interface{})}
+	return &state{C: make(chan struct{})}
 }
 
 //observerImpl implements the observer interface.

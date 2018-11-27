@@ -44,7 +44,7 @@ func TestNone(t *testing.T) {
 		}
 
 		//test update
-		if cfg.Update != trig.Check(cfg.Update) && cfg.Value != trig.Check(cfg.Value) {
+		if cfg.Update != trig.Update(cfg.Update) && cfg.Value != trig.Update(cfg.Value) {
 			t.Error("should return same values as it was called with")
 		}
 	}
