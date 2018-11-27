@@ -11,17 +11,24 @@ type Filter interface {
 	Update(interface{}) interface{}
 }
 
-// None struct implements the Filter interface.
+// Model struct implements the Filter interface.
 // It forwards all data unfiltered and unprocessed.
-type None struct {
+// Model can be embedded in structs to write user-defined filters.
+type Model struct {
 }
 
 //Check always returns true.
-func (t *None) Check(newValue interface{}) bool { return true }
+func (t *Model) Check(newValue interface{}) bool { return true }
 
 //Update returns the current value that is sent to the observers.
-func (t *None) Update(newValue interface{}) interface{} {
+func (t *Model) Update(newValue interface{}) interface{} {
 	return newValue
+}
+
+// None struct implements the Filter interface.
+// It forwards all data unfiltered and unprocessed.
+type None struct {
+	Model
 }
 
 // OnChange struct implements the Filter interface.

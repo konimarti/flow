@@ -8,6 +8,7 @@ import (
 	"github.com/lytics/anomalyzer"
 
 	"github.com/konimarti/observer"
+	"github.com/konimarti/observer/filters"
 )
 
 type TransportLayer struct {
@@ -16,27 +17,23 @@ type TransportLayer struct {
 }
 
 type AnomDetectFilter struct {
-	anom *anomalyzer.Anomalyzer
-}
-
-func (a *AnomDetectFilter) Check(v interface{}) bool {
-	return true
+	filters.Model
+	analyzer *anomalyzer.Anomalyzer
 }
 
 func (a *AnomDetectFilter) Update(v interface{}) interface{} {
 	value := v.(float64)
-	return TransportLayer{Value: value, Prob: a.anom.Push(value)}
+	return TransportLayer{Value: value, Prob: a.analyzer.Push(value)}
 }
 
 func main() {
 	// define anomalzyer
 	conf := &anomalyzer.AnomalyzerConf{
-		Sensitivity: 0.1,
-		UpperBound:  2.0,
-		LowerBound:  anomalyzer.NA, // ignore the lower bound
-		ActiveSize:  1,
-		NSeasons:    12,
-		Methods:     []string{"fence", "highrank"},
+		UpperBound: 3.0,
+		LowerBound: -3.0,
+		ActiveSize: 1,
+		NSeasons:   12,
+		Methods:    []string{"fence", "highrank", "lowrank"},
 	}
 	anom, _ := anomalyzer.NewAnomalyzer(conf, []float64{})
 
@@ -45,12 +42,15 @@ func main() {
 		var anomaly float64
 		if rand.Float64() < 0.1 {
 			anomaly = float64(rand.Intn(10))
+			if rand.Float64() < 0.5 {
+				anomaly = -anomaly
+			}
 		}
 		return rand.NormFloat64() + anomaly
 	}
 
 	// define function-based observer
-	monitor := observer.NewFromFunc(&AnomDetectFilter{&anom}, norm, 500*time.Millisecond)
+	monitor := observer.NewFromFunc(&AnomDetectFilter{analyzer: &anom}, norm, 500*time.Millisecond)
 	defer monitor.Close()
 
 	// subscriber

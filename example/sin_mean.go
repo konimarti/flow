@@ -40,7 +40,7 @@ func main() {
 
 func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
-	for {
+	for i := 0; i < 1000; i++ {
 		<-sub.Event()
 		fmt.Printf("Subscriber id(%d) got notified: %2.4f\n", id, sub.Value().(float64))
 		sub.Next()
