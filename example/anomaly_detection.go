@@ -11,16 +11,24 @@ import (
 	"github.com/konimarti/observer/filters"
 )
 
+//TransportLayer is helper type to communicate between
+// observer and subscriber using complex data.
 type TransportLayer struct {
 	Value float64
 	Prob  float64
 }
 
+//AnomDetectFilter is a user-defined filter.
+//Embed the filters.Model struct that implements
+//the Filter interface and can be overwritten.
 type AnomDetectFilter struct {
 	filters.Model
 	analyzer *anomalyzer.Anomalyzer
 }
 
+//Update is calculating the probabilty of an anomaly
+//and returns the value and that updated probability
+//to the subscribers via the TransportLayer struct.
 func (a *AnomDetectFilter) Update(v interface{}) interface{} {
 	value := v.(float64)
 	return TransportLayer{Value: value, Prob: a.analyzer.Push(value)}
@@ -58,7 +66,7 @@ func main() {
 	for {
 		<-sub.Event()
 		tl := sub.Value().(TransportLayer)
-		fmt.Printf("Value %+3.3f is anomalous with probabilty %3.3f", tl.Value, tl.Prob)
+		fmt.Printf("Value %+3.3f is anomalous with probability %3.3f", tl.Value, tl.Prob)
 		if tl.Prob > 0.9 {
 			fmt.Printf(" -- Anomaly detected!")
 		}

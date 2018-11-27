@@ -6,7 +6,7 @@ type observerChannel struct {
 	observerImpl
 }
 
-//NewFromChannel creates a new observer struct
+//NewFromChan creates a new observer struct
 func NewFromChan(nf filters.Filter, channel chan interface{}) Observer {
 	obs := observerChannel{
 		observerImpl: observerImpl{
