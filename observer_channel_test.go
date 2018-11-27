@@ -35,7 +35,7 @@ func TestChannelObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewFromChannel(observerCfg.TrFunc(start), ch)
+			observer := observer.NewFromChan(observerCfg.TrFunc(start), ch)
 			subscriber := observer.Subscribe()
 			startC <- true
 

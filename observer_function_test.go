@@ -37,7 +37,7 @@ func TestIntervalObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewFromFunction(observerCfg.TrFunc(start), fn, refresh)
+			observer := observer.NewFromFunc(observerCfg.TrFunc(start), fn, refresh)
 			subscriber := observer.Subscribe()
 			// run test
 			select {

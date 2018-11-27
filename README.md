@@ -37,7 +37,7 @@ ch := make(chan interface{})
 filter := filters.OnChange{}
 
 // create observer
-obs := observer.NewFromChannel(&filter, chan interface{})
+obs := observer.NewFromChan(&filter, chan interface{})
 
 // publish new data to channel ch
 // ch <- ..
@@ -54,7 +54,7 @@ fn := func() interface{} {
 filter := filters.OnChange{}
 
 // create observer
-obs := observer.NewFromFunction(&filter, fn, 1 * time.Second)
+obs := observer.NewFromFunc(&filter, fn, 1 * time.Second)
 ```
 
 * Subscribers can subscribe to an observer and receive events that are triggered by the filter:

@@ -17,7 +17,7 @@ func main() {
 	// create channel-based observer and set an OnValue trigger.
 	// The observer will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := observer.NewFromChannel(&filters.OnValue{3}, ch)
+	monitor := observer.NewFromChan(&filters.OnValue{3}, ch)
 	defer monitor.Close()
 
 	// syncrhoniztion

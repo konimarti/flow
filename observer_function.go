@@ -15,7 +15,7 @@ type observerFunction struct {
 }
 
 //NewFromFunction creates a new observer struct
-func NewFromFunction(nf filters.Filter, f ValueFunc, refresh time.Duration) Observer {
+func NewFromFunc(nf filters.Filter, f ValueFunc, refresh time.Duration) Observer {
 	obs := observerFunction{
 		observerImpl{
 			control: newControl(),
