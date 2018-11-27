@@ -11,20 +11,20 @@ Stream-processing Observer pattern for Golang with a modular notification behavi
 ## Implementation Notes
 Two types of observers are implemented which are suitable for different use cases:
 * Channel-based observers accept new values through a ```chan interface{}``` channel, and
-* Function-based observers that collect new values in regular intervals from a ```func() interface{}``` function.
+* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
 
 Channel-based observers are suitable in cases where we have control over the code and receive specific events. 
 Function-based observer can monitor any object or state of resources (i.e. OPC servers without call-backs).
 
-The filters control the behavior of the observers, i.e. they determine what value would trigger the notification of the subscribed observers.  
-This gives a large flexibility and covers specific use cases with user-defined filters.
-The following notifiers are currently implemented in this package:
-- ```None```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
-- ```OnChange```: Notifies when the value changes.
-- ```OnValue```: Notifies when the new value matches the initialized value.
-- ```AboveFloat64```: Notifies when a new float64 is above the initialized float64 threshold.
-- ```BelowFloat64```: Notifies when a new float64 is below the initialized float64 threshold.
-- ```MovingAverage```: Calculates the moving average over a certain sample sizes and informs all observers about the current mean.
+The filters control the behavior of the observer, i.e. they determine when and what value should be sent to the subscribers.  
+This allows for a large flexibility and covers specific use cases by writing user-defined filters.
+The following filters are currently implemented in this package:
+- ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
+- ```OnChange{}```: Notifies when the value changes.
+- ```OnValue{value}```: Notifies when the new value matches the initial value.
+- ```AboveFloat64{threshold}```: Notifies when a new float64 is above the initial float64 threshold.
+- ```BelowFloat64{threshold}```: Notifies when a new float64 is below the initial float64 threshold.
+- ```MovingAverage{Size}```: Calculates the moving average over a certain sample size and send the current moving mean to all subscribers.
 
 ## Usage
 
@@ -54,10 +54,10 @@ fn := func() interface{} {
 filter := filters.OnChange{}
 
 // create observer
-obs := observer.NewFromChannel(&filter, fn, 1 * time.Second)
+obs := observer.NewFromFunction(&filter, fn, 1 * time.Second)
 ```
 
-* Subscribers can subscribe to a observer and receive events that are triggered by the filter used in the observer:
+* Subscribers can subscribe to an observer and receive events that are triggered by the filter:
 ```
 // subscribers
 subscriber := obs.Subscribe()
