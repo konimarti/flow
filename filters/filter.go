@@ -82,7 +82,7 @@ func (t *BelowFloat64) Update(newValue interface{}) interface{} {
 }
 
 // MovingAverage implements the Filter interface.
-// It requires a Size paramter to be initialized.
+// It requires a Size parameter to be initialized.
 type MovingAverage struct {
 	Size   int
 	values []float64
