@@ -26,6 +26,9 @@ The following filters are currently implemented in this package:
 - ```BelowFloat64{threshold}```: Notifies when a new float64 is below the initial float64 threshold.
 - ```MovingAverage{Size}```: Calculates the moving average over a certain sample size and send the current moving mean to all subscribers.
 
+## Stream processing: Anomaly detection and user-defined filters
+An example for anomaly detection in streams using user-defined filters can be found [here](http://github.com/konimarti/observer/tree/master/example/anomaly_detection.go).
+
 ## Usage
 
 * To get a channel-based observer:
@@ -100,9 +103,9 @@ type Filter interface {
 }
 ```
 
-## Examples
+## More Examples
 
-See different examples [here](https://github.com/konimarti/observer/tree/master/example).
+See different examples [here](http://github.com/konimarti/observer/tree/master/example).
 
 ## Credits
 
