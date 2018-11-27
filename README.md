@@ -1,4 +1,4 @@
- Observer in Go
+ # Observer in Go
 
 [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/observer/blob/master/LICENSE)
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
@@ -29,7 +29,7 @@ The following filters are currently implemented in this package:
 ## Usage
 
 * To get a channel-based observer:
-```
+```go
 // define channel
 ch := make(chan interface{})
 
@@ -44,7 +44,7 @@ obs := observer.NewFromChannel(&filter, chan interface{})
 ```
 
 * To get a function-based observer:
-```
+```go
 // define a function that returns the values
 fn := func() interface{} {
 	return rand.Float64()
@@ -58,7 +58,7 @@ obs := observer.NewFromFunction(&filter, fn, 1 * time.Second)
 ```
 
 * Subscribers can subscribe to an observer and receive events that are triggered by the filter:
-```
+```go
 // subscribers
 subscriber := obs.Subscribe()
 for {
@@ -75,7 +75,7 @@ for {
 ## Interfaces
 
 * Observer interface:
-```
+```go
 type Observer interface {
 	Notify(interface{})
 	Subscribe() Subscriber
@@ -84,7 +84,7 @@ type Observer interface {
 ```
 
 * Subscriber interface:
-```
+```go
 type Subscriber interface {
 	Value() interface{}
 	Event() chan struct{}
@@ -93,7 +93,7 @@ type Subscriber interface {
 ```
 
 * Filter interface:
-```
+```go
 type Filter interface {
 	Check(interface{}) bool
 	Update(interface{}) interface{}
