@@ -3,6 +3,7 @@ package filters
 import (
 	"fmt"
 	"io"
+	"math"
 )
 
 // Filter defines the interface that
@@ -133,4 +134,44 @@ func (t *MovingAverage) Update(newValue interface{}) interface{} {
 		movingAverage += v
 	}
 	return movingAverage / float64(len(t.values))
+}
+
+// Sigma implements the Filter interface.
+// Check calculates standard deviation and returns true
+// if sigma for incoming value is greater than Factor,
+// Update returns incoming value.
+type Sigma struct {
+	Model
+	Window int
+	Factor float64
+	values []float64
+	stddev float64
+	mean   float64
+}
+
+//Check returns always true because every value needs to be processed.
+func (s *Sigma) Check(newValue interface{}) bool {
+	value := newValue.(float64)
+	if len(s.values) >= s.Window {
+		if s.stddev > 0.0 {
+			sigma := (value - s.mean) / s.stddev
+			if math.Abs(sigma) > s.Factor {
+				return true
+			}
+		}
+	}
+	s.values = append(s.values, value)
+	if len(s.values) > s.Window {
+		s.values = s.values[len(s.values)-s.Window:]
+	}
+	var sum, sum2 float64
+	for _, v := range s.values {
+		sum += v
+		sum2 += v * v
+	}
+	total := float64(len(s.values))
+	s.mean = sum / total
+	s.stddev = math.Sqrt((total*sum2 - sum*sum) / (total * total)) // sqrt(E[x*x] - E[x]^2)
+	//fmt.Printf("mean=%+3.3f sd=%+3.3f\n", s.mean, s.stddev)
+	return false
 }

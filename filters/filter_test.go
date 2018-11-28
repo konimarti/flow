@@ -191,3 +191,27 @@ func TestMovingAverage(t *testing.T) {
 		}
 	}
 }
+
+func TestSigma(t *testing.T) {
+	values := []float64{1.0, 1.1, 2.0, 1.05}
+	checks := []bool{false, false, true, false}
+
+	//new trigger
+	trig := filters.Sigma{Window: 2, Factor: 1.0}
+
+	for i, v := range values {
+
+		//test check
+		c := trig.Check(v)
+		if checks[i] != c {
+			fmt.Printf("Got %v. Expected %v", c, checks[i])
+			t.Error("check failed")
+		}
+
+		//test update
+		value := trig.Update(v)
+		if math.Abs(v-value.(float64)) > 1e-6 {
+			t.Error("updated value should be the same")
+		}
+	}
+}
