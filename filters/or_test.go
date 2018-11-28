@@ -39,13 +39,13 @@ func TestOr(t *testing.T) {
 		for i, _ := range cfg.Values {
 			check := or.Check(cfg.Values[i])
 			if check != cfg.Checks[i] {
-				fmt.Println("Name: %s. Got %v. Expected %v.", cfg.Name, check, cfg.Checks[i])
+				fmt.Printf("Name: %s. Got %v. Expected %v.\n", cfg.Name, check, cfg.Checks[i])
 				t.Error("check failed")
 			}
 			if check {
 				value := or.Update(cfg.Values[i])
 				if value != cfg.Wants[i] {
-					fmt.Println("Name: %s. Got %v. Expected %v.", cfg.Name, value, cfg.Wants[i])
+					fmt.Printf("Name: %s. Got %v. Expected %v.\n", cfg.Name, value, cfg.Wants[i])
 					t.Error("update failed")
 				}
 			}

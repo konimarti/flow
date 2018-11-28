@@ -44,7 +44,7 @@ type Print struct {
 	Prefix string
 }
 
-//Updates forwards value and prints it to io.Writer.
+//Update forwards value and prints it to io.Writer.
 func (p *Print) Update(v interface{}) interface{} {
 	fmt.Fprintf(p.Writer, "%s %v\n", p.Prefix, v)
 	return v

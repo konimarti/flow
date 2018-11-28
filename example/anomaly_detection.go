@@ -26,7 +26,7 @@ type AnomDetectFilter struct {
 	analyzer *anomalyzer.Anomalyzer
 }
 
-//Update is calculating the probabilty of an anomaly
+//Update is calculating the probability of an anomaly
 //and returns the value and that updated probability
 //to the subscribers via the TransportLayer struct.
 func (a *AnomDetectFilter) Update(v interface{}) interface{} {
