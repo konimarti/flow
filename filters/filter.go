@@ -1,5 +1,10 @@
 package filters
 
+import (
+	"fmt"
+	"io"
+)
+
 // Filter defines the interface that
 // filters or processes incoming data
 // and decides when to notify the observers.
@@ -29,6 +34,20 @@ func (t *Model) Update(newValue interface{}) interface{} {
 // It forwards all data unfiltered and unprocessed.
 type None struct {
 	Model
+}
+
+// Print struct implements the Filter interface.
+// It writes the incoming values to an io.Writer with a prefix.
+type Print struct {
+	Model
+	Writer io.Writer
+	Prefix string
+}
+
+//Updates forwards value and prints it to io.Writer.
+func (p *Print) Update(v interface{}) interface{} {
+	fmt.Fprintf(p.Writer, "%s %v\n", p.Prefix, v)
+	return v
 }
 
 // OnChange struct implements the Filter interface.

@@ -1,6 +1,8 @@
 package filters_test
 
 import (
+	"bytes"
+	"fmt"
 	"math"
 	"testing"
 
@@ -46,6 +48,33 @@ func TestNone(t *testing.T) {
 		//test update
 		if cfg.Update != trig.Update(cfg.Update) && cfg.Value != trig.Update(cfg.Value) {
 			t.Error("should return same values as it was called with")
+		}
+	}
+}
+
+func TestPrint(t *testing.T) {
+	for _, cfg := range configT {
+		//new trigger
+		var buf bytes.Buffer
+		prefix := "Prefix"
+		trig := filters.Print{Writer: &buf, Prefix: prefix}
+
+		//test check
+		if !trig.Check(cfg.Value) {
+			t.Error("should fire because all values are processed")
+		}
+		if !trig.Check(cfg.Update) {
+			t.Error("should fire because all values are processed")
+		}
+
+		//test update
+		if cfg.Value != trig.Update(cfg.Value) {
+			t.Error("should return same values as it was called with")
+		}
+		str := fmt.Sprintf("%s %v\n", prefix, cfg.Value)
+		if buf.String() != str {
+			fmt.Printf("Got: %s. Expected: %s\n", buf.String(), str)
+			t.Error("Printed string does not match")
 		}
 	}
 }
