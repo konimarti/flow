@@ -71,17 +71,18 @@ The filters control the behavior of the observer, i.e. they determine when and w
 ### Available filters out-of-the-box
 
 The following filters are currently implemented in this package:
-	* Notification filters:
-		- ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
-		- ```Mute{Period}```: Mute shuts down all notifications after an event for a specific period.
-		- ```OnChange{}```: Notifies when the value changes.
-		- ```OnValue{value}```: Notifies when the new value matches the defined value at initialization. 
-		- ```AboveFloat64{threshold}```: Notifies when a new float64 is above the pre-defined float64 threshold.
-		- ```BelowFloat64{threshold}```: Notifies when a new float64 is below the pre-defined float64 threshold.
-		- ```Sigma{Window, Factor}```: Sigma checks if the incoming value is a certain multiple (=factor) of standard deviations away from the mean.
-	* Stream-processing filters:
-		- ```MovingAverage{Window}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
-		- ```StdDev{Window}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
+* Notification filters:
+  - ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
+  - ```Mute{Period}```: Mute shuts down all notifications after an event for a specific period.
+  - ```OnChange{}```: Notifies when the value changes.
+  - ```OnValue{value}```: Notifies when the new value matches the defined value at initialization. 
+  - ```AboveFloat64{threshold}```: Notifies when a new float64 is above the pre-defined float64 threshold.
+  - ```BelowFloat64{threshold}```: Notifies when a new float64 is below the pre-defined float64 threshold.
+  - ```Sigma{Window, Factor}```: Sigma checks if the incoming value is a certain multiple (=factor) of standard deviations away from the mean.
+
+* Stream-processing filters:
+  - ```MovingAverage{Window}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
+  - ```StdDev{Window}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
 
 ### User-defined filters
 
@@ -104,7 +105,7 @@ func (d *Double) Update(v interface{}) interface{} {
 
 Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)```. 
 go
-For notification behavior, the ```filters.Or``` function can be useful, especially in cases when you want 
+For notification behavior, the ```filters.NewOr``` function can be useful, especially in cases when you want 
 to monitor a value that needs to remain within a certain range:
 ```go
 	norm := func() interface{} {
