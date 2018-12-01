@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
 
-Light-weight stream processing in Golang with a modular notification behavior based on filters.
+Stream processing in Golang with a modular notification behavior based on filters.
 
 ```go get github.com/konimarti/observer```
 
