@@ -157,9 +157,10 @@ func (t *MovingAverage) Update(newValue interface{}) interface{} {
 }
 
 // Sigma implements the Filter interface.
-// Check calculates standard deviation and returns true
-// if sigma for incoming value is greater than Factor,
-// Update returns incoming value.
+// Check calculates the number of standard deviations that
+// the incoming value is away from the mean.
+// If that value is above the defined factor, it notifies the subscribers.
+// Update returns the incoming value.
 type Sigma struct {
 	Window int
 	Factor float64

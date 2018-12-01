@@ -4,30 +4,9 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
 
-Stream-processing Observer pattern for Golang with a modular notification behavior based on filters.
+Light-weight stream processing in Golang with a modular notification behavior based on filters.
 
 ```go get github.com/konimarti/observer```
-
-## Implementation Notes
-Two types of observers are implemented which are suitable for different use cases:
-* Channel-based observers accept new values through a ```chan interface{}``` channel, and
-* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
-
-Channel-based observers are suitable in cases where we have control over the code and receive specific events. 
-Function-based observer can monitor any object or state of resources (i.e. OPC servers without call-backs).
-
-The filters control the behavior of the observer, i.e. they determine when and what value should be sent to the subscribers.  
-This allows for a large flexibility and covers specific use cases by writing user-defined filters.
-The following filters are currently implemented in this package:
-- ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
-- ```OnChange{}```: Notifies when the value changes.
-- ```OnValue{value}```: Notifies when the new value matches the initial value.
-- ```AboveFloat64{threshold}```: Notifies when a new float64 is above the initial float64 threshold.
-- ```BelowFloat64{threshold}```: Notifies when a new float64 is below the initial float64 threshold.
-- ```MovingAverage{Size}```: Calculates the moving average over a certain sample size and send the current moving mean to all subscribers.
-
-## Stream processing: Anomaly detection and user-defined filters
-An example for anomaly detection in streams using user-defined filters can be found [here](http://github.com/konimarti/observer/tree/master/example/anomaly_detection.go).
 
 ## Usage
 
@@ -75,6 +54,82 @@ for {
 
 ```
 
+## Implementation notes
+
+Two types of observers are available that are suitable for different use cases:
+* Channel-based observers accept new values through a ```chan interface{}``` channel, and
+* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
+
+Channel-based observers are useful in cases where we receive specific events. 
+Function-based observers can be used to monitor any object or state of resources 
+(i.e. reading data from [OPC](http://github.com/konimarti/opc), HTTP requests, etc.).
+
+## Filters
+
+The filters control the behavior of the observer, i.e. they determine when and what values should be sent to the subscribers.  
+
+### Available filters out-of-the-box
+
+The following filters are currently implemented in this package:
+	* Notification filters:
+		- ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
+		- ```Mute{Period}```: Mute shuts down all notifications after an event for a specific period.
+		- ```OnChange{}```: Notifies when the value changes.
+		- ```OnValue{value}```: Notifies when the new value matches the defined value at initialization. 
+		- ```AboveFloat64{threshold}```: Notifies when a new float64 is above the pre-defined float64 threshold.
+		- ```BelowFloat64{threshold}```: Notifies when a new float64 is below the pre-defined float64 threshold.
+		- ```Sigma{Window, Factor}```: Sigma checks if the incoming value is a certain multiple (=factor) of standard deviations away from the mean.
+	* Stream-processing filters:
+		- ```MovingAverage{Window}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
+		- ```StdDev{Window}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
+
+### User-defined filters
+
+User-defined filters can easily be created: Define your struct and embed the ```filters.Model```. You can then customize one or both of the interface functions. 
+The ```filters.None``` is implemented by creating an empty struct and just embedding ```filters.Model```, for example.
+
+The following user-defined filter expects a float64 value and multiplies it with a pre-defined factor:
+```go
+type Multiply struct {
+	filters.Model
+	Factor float64
+}
+
+func (d *Double) Update(v interface{}) interface{} {
+	return v.(float64) * d.Factor
+}
+```
+
+### Logical structures
+
+Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)```. 
+go
+For notification behavior, the ```filters.Or``` function can be useful, especially in cases when you want 
+to monitor a value that needs to remain within a certain range:
+```go
+	norm := func() interface{} {
+		return rand.NormFloat64()
+	}
+	monitor := observer.NewFromFunc(
+		filters.NewChain(
+			&filters.MovingAverage{Size: 10},
+			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
+			filters.NewOr(
+				&filters.AboveFloat64{0.5},
+				&filters.BelowFloat64{-0.5},
+			),
+		),
+		norm,
+		500*time.Millisecond,
+	)
+```
+This example can be found [here](http://github.com/konimarti/observer/tree/master/example/chain.go).
+
+### A stream-processing use case: Anomaly detection 
+
+An anomaly detection example for streams with an user-defined filter based on Lytics' [Anomalyzer](http://github.com/lytics/anomalyzer) 
+can be found [here](http://github.com/konimarti/observer/tree/master/example/anomaly_detection.go).
+
 ## Interfaces
 
 * Observer interface:
@@ -103,9 +158,9 @@ type Filter interface {
 }
 ```
 
-## More Examples
+## More examples
 
-See different examples [here](http://github.com/konimarti/observer/tree/master/example).
+Check out the examples [here](http://github.com/konimarti/observer/tree/master/example).
 
 ## Credits
 
