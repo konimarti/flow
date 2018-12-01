@@ -24,7 +24,7 @@ func main() {
 	// Also, print out moving average with every update.
 	monitor := observer.NewFromFunc(
 		filters.NewChain(
-			&filters.MovingAverage{Size: 10},
+			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
 			filters.NewOr(
 				&filters.AboveFloat64{0.5},

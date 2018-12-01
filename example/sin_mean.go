@@ -25,7 +25,7 @@ func main() {
 	// create function-based observer and set an MovingAverage filter to
 	// calulcate the moving average; expected moving average = 0.0
 	// The function is evaluated every second.
-	monitor := observer.NewFromFunc(&filters.MovingAverage{Size: 20}, sinfct, 1*time.Second)
+	monitor := observer.NewFromFunc(&filters.MovingAverage{Window: 20}, sinfct, 1*time.Second)
 	defer monitor.Close()
 
 	// subscribers
