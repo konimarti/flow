@@ -215,3 +215,29 @@ func TestSigma(t *testing.T) {
 		}
 	}
 }
+
+func TestStddev(t *testing.T) {
+	values := []float64{1.0, 1.1, 2.0, 1.05}
+	checks := []bool{true, true, true, true}
+	processed := []float64{0.0, 0.05, 0.4496913, 0.4365267}
+
+	//new trigger
+	trig := filters.Stddev{Window: 3}
+
+	for i, v := range values {
+
+		//test check
+		c := trig.Check(v)
+		if checks[i] != c {
+			fmt.Printf("Got %v. Expected %v", c, checks[i])
+			t.Error("check failed")
+		}
+
+		//test update
+		value := trig.Update(v)
+		if math.Abs(processed[i]-value.(float64)) > 1e-6 {
+			fmt.Printf("Got %v. Expected %v", value.(float64), processed[i])
+			t.Error("updated value should be the same")
+		}
+	}
+}

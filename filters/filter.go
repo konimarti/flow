@@ -40,9 +40,9 @@ type None struct {
 // Print struct implements the Filter interface.
 // It writes the incoming values to an io.Writer with a prefix.
 type Print struct {
-	Model
 	Writer io.Writer
 	Prefix string
+	Model
 }
 
 //Update forwards value and prints it to io.Writer.
@@ -111,13 +111,13 @@ func (t *BelowFloat64) Update(newValue interface{}) interface{} {
 // MovingAverage implements the Filter interface.
 // It requires a Size parameter to be initialized.
 type MovingAverage struct {
-	Size   int
+	Window int
 	values []float64
 }
 
 //NewMovingAverage returns a moving average filter.
 func NewMovingAverage(size int) Filter {
-	return &MovingAverage{Size: size}
+	return &MovingAverage{Window: size}
 }
 
 //Check returns always true because every value needs to be processed.
@@ -126,8 +126,8 @@ func (t *MovingAverage) Check(newValue interface{}) bool { return true }
 //Update stores the new value and returns the moving average of updated data set.
 func (t *MovingAverage) Update(newValue interface{}) interface{} {
 	t.values = append(t.values, newValue.(float64))
-	if len(t.values) > t.Size {
-		t.values = t.values[len(t.values)-t.Size:]
+	if len(t.values) > t.Window {
+		t.values = t.values[len(t.values)-t.Window:]
 	}
 	var movingAverage float64
 	for _, v := range t.values {
@@ -141,12 +141,12 @@ func (t *MovingAverage) Update(newValue interface{}) interface{} {
 // if sigma for incoming value is greater than Factor,
 // Update returns incoming value.
 type Sigma struct {
-	Model
 	Window int
 	Factor float64
 	values []float64
 	stddev float64
 	mean   float64
+	Model
 }
 
 //Check returns always true because every value needs to be processed.
@@ -174,4 +174,31 @@ func (s *Sigma) Check(newValue interface{}) bool {
 	s.stddev = math.Sqrt((total*sum2 - sum*sum) / (total * total)) // sqrt(E[x*x] - E[x]^2)
 	//fmt.Printf("mean=%+3.3f sd=%+3.3f\n", s.mean, s.stddev)
 	return false
+}
+
+// Stddev implements the Filter interface.
+// Check returns always true for data processing
+// Update calculates standard deviation for a given window
+// for every incoming data point and returns this value.
+type Stddev struct {
+	Window int
+	values []float64
+	stddev float64
+	Model
+}
+
+//Check returns always true because every value needs to be processed.
+func (s *Stddev) Update(newValue interface{}) interface{} {
+	value := newValue.(float64)
+	s.values = append(s.values, value)
+	if len(s.values) > s.Window {
+		s.values = s.values[len(s.values)-s.Window:]
+	}
+	var sum, sum2 float64
+	for _, v := range s.values {
+		sum += v
+		sum2 += v * v
+	}
+	total := float64(len(s.values))
+	return math.Sqrt((total*sum2 - sum*sum) / (total * total)) // sqrt(E[x*x] - E[x]^2)
 }
