@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"time"
 )
 
 // Filter defines the interface that
@@ -35,6 +36,25 @@ func (t *Model) Update(newValue interface{}) interface{} {
 // It forwards all data unfiltered and unprocessed.
 type None struct {
 	Model
+}
+
+// Mute struct implements the Filter interface.
+// It blocks the forwarding of values within a
+// predefined time duration.
+type Mute struct {
+	Period   time.Duration
+	previous time.Time
+	Model
+}
+
+//Check always returns true.
+func (m *Mute) Check(newValue interface{}) bool {
+	t := time.Now()
+	if t.Sub(m.previous) < m.Period {
+		return false
+	}
+	m.previous = t
+	return true
 }
 
 // Print struct implements the Filter interface.

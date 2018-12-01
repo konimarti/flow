@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"testing"
+	"time"
 
 	"github.com/konimarti/observer/filters"
 )
@@ -238,6 +239,36 @@ func TestStddev(t *testing.T) {
 		if math.Abs(processed[i]-value.(float64)) > 1e-6 {
 			fmt.Printf("Got %v. Expected %v", value.(float64), processed[i])
 			t.Error("updated value should be the same")
+		}
+	}
+}
+
+func TestMute(t *testing.T) {
+	values := []interface{}{1.0, 1, "hello"}
+
+	for _, v := range values {
+		//new trigger
+		trig := filters.Mute{Period: 100 * time.Millisecond}
+
+		b1 := trig.Check(v)
+		b2 := trig.Check(v)
+		time.Sleep(100 * time.Millisecond)
+		b3 := trig.Check(v)
+		if b1 != true {
+			t.Error("first check should be true")
+		}
+		if b2 != false {
+			t.Error("second check immediately after first should be false")
+		}
+		if b3 != true {
+			t.Error("thrid check after mute period should be true")
+		}
+
+		// Update
+		newVal := trig.Update(v)
+		if v != newVal {
+			fmt.Printf("Got %v. Expected %v", newVal, v)
+			t.Error("value returend from update should be the same")
 		}
 	}
 }

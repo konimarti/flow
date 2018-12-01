@@ -31,6 +31,7 @@ func main() {
 			&filters.Stddev{Window: 20},
 			&filters.Print{Writer: os.Stdout, Prefix: "Std Dev:"},
 			&filters.AboveFloat64{1.4},
+			&filters.Mute{Period: 2 * time.Second},
 		),
 		norm,
 		500*time.Millisecond,
