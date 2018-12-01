@@ -113,7 +113,7 @@ to monitor a value that needs to remain within a certain range:
 	}
 	monitor := observer.NewFromFunc(
 		filters.NewChain(
-			&filters.MovingAverage{Size: 10},
+			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
 			filters.NewOr(
 				&filters.AboveFloat64{0.5},
