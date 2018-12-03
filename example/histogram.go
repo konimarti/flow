@@ -11,7 +11,7 @@ import (
 	"github.com/konimarti/observer/filters"
 )
 
-//Hist is a user-defined filter.
+//HistFilter is a user-defined filter.
 //Wrapper for hdrhistogram.
 type HistFilter struct {
 	hist *hdrhistogram.Histogram

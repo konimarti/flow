@@ -15,7 +15,7 @@ func main() {
 	var counter int
 	norm := func() interface{} {
 		val := rand.NormFloat64()
-		counter += 1
+		counter++
 		factor := 1.0
 		if counter > 40 && counter < 60 {
 			factor = 2.0

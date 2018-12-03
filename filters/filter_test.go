@@ -261,7 +261,7 @@ func TestMute(t *testing.T) {
 			t.Error("second check immediately after first should be false")
 		}
 		if b3 != true {
-			t.Error("thrid check after mute period should be true")
+			t.Error("third check after mute period should be true")
 		}
 
 		// Update

@@ -208,7 +208,7 @@ type Stddev struct {
 	Model
 }
 
-//Check returns always true because every value needs to be processed.
+//Update returns the standard deviation of samples in the window.
 func (s *Stddev) Update(newValue interface{}) interface{} {
 	value := newValue.(float64)
 	s.values = append(s.values, value)
