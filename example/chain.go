@@ -26,7 +26,7 @@ func main() {
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
-			filters.NewOr(
+			filters.NewSwitch(
 				&filters.AboveFloat64{0.5},
 				&filters.BelowFloat64{-0.5},
 			),

@@ -7,7 +7,7 @@ import (
 	"github.com/konimarti/observer/filters"
 )
 
-func TestOr(t *testing.T) {
+func TestSwitch(t *testing.T) {
 	var config = []struct {
 		Name   string
 		Values []interface{}
@@ -28,7 +28,7 @@ func TestOr(t *testing.T) {
 
 	for _, cfg := range config {
 		// internal consistency checks
-		or := filters.NewOr(cfg.Left, cfg.Right)
+		or := filters.NewSwitch(cfg.Left, cfg.Right)
 		if len(cfg.Values) != len(cfg.Checks) {
 			t.Error("internal test consistency failed (values vs. Checks)")
 		}

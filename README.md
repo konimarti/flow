@@ -105,7 +105,7 @@ func (d *Double) Update(v interface{}) interface{} {
 
 Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)```. 
 go
-For notification behavior, the ```filters.NewOr``` function can be useful, especially in cases when you want 
+For notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
 to monitor a value that needs to remain within a certain range:
 ```go
 	norm := func() interface{} {
@@ -115,7 +115,7 @@ to monitor a value that needs to remain within a certain range:
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
-			filters.NewOr(
+			filters.NewSwitch(
 				&filters.AboveFloat64{0.5},
 				&filters.BelowFloat64{-0.5},
 			),
