@@ -165,6 +165,7 @@ Check out the examples [here](http://github.com/konimarti/observer/tree/master/e
 
 ## Credits
 
+This software package has been developed for and is in production at [Kalkfabrik Netstal](http://www.kfn.ch/en).
 The design of this observer implementation was inspired by [go-observer](http://github.com/imkira/go-observer).
 
 ## Disclaimer
