@@ -96,8 +96,8 @@ type Multiply struct {
 	Factor float64
 }
 
-func (d *Double) Update(v interface{}) interface{} {
-	return v.(float64) * d.Factor
+func (m *Multiply) Update(v interface{}) interface{} {
+	return v.(float64) * m.Factor
 }
 ```
 
