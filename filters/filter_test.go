@@ -272,3 +272,32 @@ func TestMute(t *testing.T) {
 		}
 	}
 }
+
+func TestLowpass(t *testing.T) {
+	a := []float64{0.0, 1.0, 0.5}
+	input := []float64{1.0, 2.0, 3.0}
+	expected := [][]float64{
+		[]float64{0.0, 0.0, 0.0},
+		[]float64{1.0, 2.0, 3.0},
+		[]float64{0.5, 1.25, 2.125},
+	}
+
+	for i, factor := range a {
+		trig := filters.Lowpass{A: factor}
+		for j, in := range input {
+			//test check
+			if !trig.Check(in) {
+				t.Error("should always fire")
+			}
+			// test update
+			out := trig.Update(in)
+			if math.Abs(expected[i][j]-out.(float64)) > 1e-6 {
+				fmt.Println("failed for i=", i, "j=", j)
+				fmt.Println("input =", in)
+				fmt.Println("expected =", expected[i][j])
+				fmt.Println("received =", out.(float64))
+				t.Error("lowpass filter does not work correctly")
+			}
+		}
+	}
+}

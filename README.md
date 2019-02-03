@@ -83,6 +83,7 @@ The following filters are currently implemented in this package:
 * Stream-processing filters:
   - ```MovingAverage{Window}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
   - ```StdDev{Window}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
+  - ```Lowpass{A}```: Performs low-pass filtering on the input data (exponential smoothing) with the smoothing factor A. 
 
 ### User-defined filters
 
@@ -96,17 +97,17 @@ type Multiply struct {
 	Factor float64
 }
 
-func (d *Double) Update(v interface{}) interface{} {
-	return v.(float64) * d.Factor
+func (m *Multiply) Update(v interface{}) interface{} {
+	return v.(float64) * m.Factor
 }
 ```
 
 ### Logical structures
 
 Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)```. 
-go
-For notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
-to monitor a value that needs to remain within a certain range:
+
+To adjust the notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
+to monitor a value that needs to remain within a certain range ("deadband"):
 ```go
 	norm := func() interface{} {
 		return rand.NormFloat64()

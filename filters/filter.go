@@ -223,3 +223,21 @@ func (s *Stddev) Update(newValue interface{}) interface{} {
 	total := float64(len(s.values))
 	return math.Sqrt((total*sum2 - sum*sum) / (total * total)) // sqrt(E[x*x] - E[x]^2)
 }
+
+// Lowpass implements exponential smoothing.
+// Can be used as RC lowpass filter when a = dt / (RC + dt).
+// Check returns always true for data processing
+// Update returns the filtered values.
+type Lowpass struct {
+	A        float64
+	oldValue float64
+	Model
+}
+
+//Update returns the exponentially smoothened parameter
+func (lp *Lowpass) Update(newValue interface{}) interface{} {
+	x := newValue.(float64)
+	lpValue := lp.A*x + (1-lp.A)*lp.oldValue
+	lp.oldValue = lpValue
+	return lpValue
+}
