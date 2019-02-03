@@ -26,6 +26,12 @@ Stream processing in Golang with a modular notification behavior based on filter
 		norm,
 		500*time.Millisecond,
 	)
+	subscriber := monitor.Subscribe()
+	for {
+		<-subscriber.Event()
+		fmt.Println("Notified:",subscriber.Value())
+		subscriber.Next()
+	}
 ```
 
 ## Description
