@@ -10,6 +10,34 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ## Usage
 
+```go
+	norm := func() interface{} {
+		return rand.NormFloat64()
+	}
+	monitor := observer.NewFromFunc(
+		filters.NewChain(
+			&filters.MovingAverage{Window: 10},
+			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
+			filters.NewSwitch(
+				&filters.AboveFloat64{0.5},
+				&filters.BelowFloat64{-0.5},
+			),
+		),
+		norm,
+		500*time.Millisecond,
+	)
+```
+
+## Description
+
+Two types of observers are available that are suitable for different use cases:
+* Channel-based observers accept new values through a ```chan interface{}``` channel, and
+* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
+
+Channel-based observers are useful in cases where we receive specific events. 
+Function-based observers can be used to monitor any object or state of resources 
+(i.e. reading data from [OPC](http://github.com/konimarti/opc), HTTP requests, etc.).
+
 * To get a channel-based observer:
 ```go
 // define channel
@@ -54,16 +82,6 @@ for {
 
 ```
 
-## Implementation notes
-
-Two types of observers are available that are suitable for different use cases:
-* Channel-based observers accept new values through a ```chan interface{}``` channel, and
-* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
-
-Channel-based observers are useful in cases where we receive specific events. 
-Function-based observers can be used to monitor any object or state of resources 
-(i.e. reading data from [OPC](http://github.com/konimarti/opc), HTTP requests, etc.).
-
 ## Filters
 
 The filters control the behavior of the observer, i.e. they determine when and what values should be sent to the subscribers.  
@@ -107,25 +125,9 @@ func (m *Multiply) Update(v interface{}) interface{} {
 Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)```. 
 
 To adjust the notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
-to monitor a value that needs to remain within a certain range ("deadband"):
-```go
-	norm := func() interface{} {
-		return rand.NormFloat64()
-	}
-	monitor := observer.NewFromFunc(
-		filters.NewChain(
-			&filters.MovingAverage{Window: 10},
-			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
-			filters.NewSwitch(
-				&filters.AboveFloat64{0.5},
-				&filters.BelowFloat64{-0.5},
-			),
-		),
-		norm,
-		500*time.Millisecond,
-	)
-```
-This example can be found [here](http://github.com/konimarti/observer/tree/master/example/chain.go).
+to monitor a value that needs to remain within a certain range ("deadband").
+
+See [this example](http://github.com/konimarti/observer/tree/master/example/chain.go) for more information on logical structures 
 
 ### A stream-processing use case: Anomaly detection 
 
