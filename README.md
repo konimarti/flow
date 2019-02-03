@@ -1,4 +1,4 @@
- # Observer in Go
+ # Stream processing pipeline in Go
 
 [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/observer/blob/master/LICENSE)
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
