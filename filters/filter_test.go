@@ -53,6 +53,18 @@ func TestNone(t *testing.T) {
 	}
 }
 
+func TestSink(t *testing.T) {
+	for _, cfg := range configT {
+		//new trigger
+		trig := filters.Sink{}
+
+		//test check
+		if trig.Check(cfg.Value) {
+			t.Error("should not fire because no values are processed")
+		}
+	}
+}
+
 func TestPrint(t *testing.T) {
 	for _, cfg := range configT {
 		//new trigger

@@ -38,6 +38,17 @@ type None struct {
 	Model
 }
 
+// Sink never forwards any values;
+// it essentially blocks the flow of data
+type Sink struct {
+	Model
+}
+
+//Check always returns false
+func (s *Sink) Check(newValue interface{}) bool {
+	return false
+}
+
 // Mute struct implements the Filter interface.
 // It blocks the forwarding of values within a
 // predefined time duration.
@@ -67,7 +78,10 @@ type Print struct {
 
 //Update forwards value and prints it to io.Writer.
 func (p *Print) Update(v interface{}) interface{} {
-	fmt.Fprintf(p.Writer, "%s %v\n", p.Prefix, v)
+	_, err := fmt.Fprintf(p.Writer, "%s %v\n", p.Prefix, v)
+	if err != nil {
+		fmt.Printf("%s %v\n", p.Prefix, v)
+	}
 	return v
 }
 

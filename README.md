@@ -96,7 +96,8 @@ The filters control the behavior of the observer, i.e. they determine when and w
 
 The following filters are currently implemented in this package:
 * Notification filters:
-  - ```None{}```: No filter is applied. All values are send to the observers unfilitered and unprocessed.
+  - ```None{}```: No filter is applied. All values are sent to the observers unfilitered and unprocessed.
+  - ```Sink{}```: Blocks the flow of data. No values are sent to the observers.
   - ```Mute{Period}```: Mute shuts down all notifications after an event for a specific period.
   - ```OnChange{}```: Notifies when the value changes.
   - ```OnValue{value}```: Notifies when the new value matches the defined value at initialization. 
