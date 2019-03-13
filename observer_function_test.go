@@ -1,11 +1,11 @@
-package observer_test
+package pipeline_test
 
 import (
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/konimarti/observer"
+	"github.com/konimarti/pipeline"
 )
 
 func TestIntervalObservers(t *testing.T) {
@@ -37,7 +37,7 @@ func TestIntervalObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewFromFunc(observerCfg.TrFunc(start), fn, refresh)
+			observer := pipeline.NewFromFunc(observerCfg.TrFunc(start), fn, refresh)
 			subscriber := observer.Subscribe()
 			// run test
 			select {

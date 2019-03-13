@@ -1,4 +1,4 @@
-package observer
+package pipeline
 
 //The control struct to shut down all the observers gracefully.
 //It implements the io.Closer interface.

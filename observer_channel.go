@@ -1,6 +1,6 @@
-package observer
+package pipeline
 
-import "github.com/konimarti/observer/filters"
+import "github.com/konimarti/pipeline/filters"
 
 type observerChannel struct {
 	observerImpl

@@ -1,6 +1,6 @@
-package observer_test
+package pipeline_test
 
-import "github.com/konimarti/observer/filters"
+import "github.com/konimarti/pipeline/filters"
 
 var config = []struct {
 	Values []interface{}

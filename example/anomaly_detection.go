@@ -7,8 +7,8 @@ import (
 
 	"github.com/lytics/anomalyzer"
 
-	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline"
+	"github.com/konimarti/pipeline/filters"
 )
 
 //TransportLayer is helper type to communicate between

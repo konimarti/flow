@@ -1,4 +1,4 @@
-package observer
+package pipeline
 
 import (
 	"testing"

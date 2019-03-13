@@ -1,9 +1,9 @@
-package observer
+package pipeline
 
 import (
 	"sync"
 
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline/filters"
 )
 
 // Observer defines the observe interface

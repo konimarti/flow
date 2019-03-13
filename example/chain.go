@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline"
+	"github.com/konimarti/pipeline/filters"
 )
 
 func main() {

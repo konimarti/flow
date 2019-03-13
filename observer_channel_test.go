@@ -1,11 +1,11 @@
-package observer_test
+package pipeline_test
 
 import (
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/konimarti/observer"
+	"github.com/konimarti/pipeline"
 )
 
 func TestChannelObservers(t *testing.T) {
@@ -35,7 +35,7 @@ func TestChannelObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := observer.NewFromChan(observerCfg.TrFunc(start), ch)
+			observer := pipeline.NewFromChan(observerCfg.TrFunc(start), ch)
 			subscriber := observer.Subscribe()
 			startC <- true
 

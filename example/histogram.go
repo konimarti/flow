@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/codahale/hdrhistogram"
-	"github.com/konimarti/observer"
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline"
+	"github.com/konimarti/pipeline/filters"
 )
 
 //HistFilter is a user-defined filter.

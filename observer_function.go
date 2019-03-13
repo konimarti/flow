@@ -1,9 +1,9 @@
-package observer
+package pipeline
 
 import (
 	"time"
 
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline/filters"
 )
 
 // ValueFunc is the type of function to pass to the observer intsance to retrieve the next value

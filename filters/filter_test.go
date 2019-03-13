@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline/filters"
 )
 
 var configT = []struct {

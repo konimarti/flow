@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/konimarti/observer/filters"
+	"github.com/konimarti/pipeline/filters"
 )
 
 func TestChain(t *testing.T) {
