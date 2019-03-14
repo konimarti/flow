@@ -2,13 +2,13 @@ package pipeline
 
 import "github.com/konimarti/pipeline/filters"
 
-type observerChannel struct {
+type pipelineChannel struct {
 	observerImpl
 }
 
 //NewFromChan creates a new observer struct
 func NewFromChan(nf filters.Filter, channel chan interface{}) Observer {
-	obs := observerChannel{
+	obs := pipelineChannel{
 		observerImpl: observerImpl{
 			control: newControl(),
 			filter:  nf,
@@ -20,7 +20,7 @@ func NewFromChan(nf filters.Filter, channel chan interface{}) Observer {
 }
 
 //run starts the observer with interval and fn
-func (o *observerChannel) run(ch chan interface{}) {
+func (o *pipelineChannel) run(ch chan interface{}) {
 
 	go func() {
 		for {

@@ -10,13 +10,13 @@ import (
 type ValueFunc func() interface{}
 
 //observer contains the information to get a value
-type observerFunction struct {
+type pipelineFunction struct {
 	observerImpl
 }
 
 //NewFromFunc creates a new observer struct
 func NewFromFunc(nf filters.Filter, f ValueFunc, refresh time.Duration) Observer {
-	obs := observerFunction{
+	obs := pipelineFunction{
 		observerImpl{
 			control: newControl(),
 			filter:  nf,
@@ -28,7 +28,7 @@ func NewFromFunc(nf filters.Filter, f ValueFunc, refresh time.Duration) Observer
 }
 
 //run starts the observer with interval and fn
-func (o *observerFunction) run(c <-chan time.Time, fn ValueFunc) {
+func (o *pipelineFunction) run(c <-chan time.Time, fn ValueFunc) {
 
 	go func() {
 		for {
