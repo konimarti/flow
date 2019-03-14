@@ -1,12 +1,12 @@
  # Stream processing pipeline in Go
 
-[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/observer/blob/master/LICENSE)
-[![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/observer)
-[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/observer)
+[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/pipeline/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/konimarti/pipeline?status.svg)](https://godoc.org/github.com/konimarti/pipeline)
+[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/pipeline)](https://goreportcard.com/report/github.com/konimarti/pipeline)
 
 Stream processing in Golang with a modular notification behavior based on filters.
 
-```go get github.com/konimarti/observer```
+```go get github.com/konimarti/pipeline```
 
 ## Usage
 
@@ -14,7 +14,7 @@ Stream processing in Golang with a modular notification behavior based on filter
 	norm := func() interface{} {
 		return rand.NormFloat64()
 	}
-	monitor := observer.NewFromFunc(
+	monitor := pipeline.NewFromFunc(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -36,7 +36,7 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ## Description
 
-Two types of observers are available that are suitable for different use cases:
+Two types of pipelines are available that are suitable for different use cases:
 * Channel-based observers accept new values through a ```chan interface{}``` channel, and
 * Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
 
@@ -53,7 +53,7 @@ ch := make(chan interface{})
 filter := filters.OnChange{}
 
 // create observer
-obs := observer.NewFromChan(&filter, chan interface{})
+obs := pipeline.NewFromChan(&filter, chan interface{})
 
 // publish new data to channel ch
 // ch <- ..
@@ -69,8 +69,8 @@ fn := func() interface{} {
 // define filter
 filter := filters.OnChange{}
 
-// create observer
-obs := observer.NewFromFunc(&filter, fn, 1 * time.Second)
+// create pipeline
+obs := pipeline.NewFromFunc(&filter, fn, 1 * time.Second)
 ```
 
 * Subscribers can subscribe to an observer and receive events that are triggered by the filter:
@@ -134,12 +134,12 @@ Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)
 To adjust the notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
 to monitor a value that needs to remain within a certain range ("deadband").
 
-See [this example](http://github.com/konimarti/observer/tree/master/example/chain.go) for more information on logical structures 
+See [this example](http://github.com/konimarti/pipeline/tree/master/example/chain.go) for more information on logical structures 
 
 ### A stream-processing use case: Anomaly detection 
 
 An anomaly detection example for streams with an user-defined filter based on Lytics' [Anomalyzer](http://github.com/lytics/anomalyzer) 
-can be found [here](http://github.com/konimarti/observer/tree/master/example/anomaly_detection.go).
+can be found [here](http://github.com/konimarti/pipeline/tree/master/example/anomaly_detection.go).
 
 ## Interfaces
 
@@ -171,12 +171,12 @@ type Filter interface {
 
 ## More examples
 
-Check out the examples [here](http://github.com/konimarti/observer/tree/master/example).
+Check out the examples [here](http://github.com/konimarti/pipeline/tree/master/example).
 
 ## Credits
 
 This software package has been developed for and is in production at [Kalkfabrik Netstal](http://www.kfn.ch/en).
-The design of this observer implementation was inspired by [go-observer](http://github.com/imkira/go-observer).
+The design of the observer implementation was inspired by [go-observer](http://github.com/imkira/go-observer).
 
 ## Disclaimer
 
