@@ -22,7 +22,7 @@ func main() {
 	// Monitor Moving Average over 10 samples and notifies subscribers,
 	// when average is below -0.5 or above 0.5.
 	// Also, print out moving average with every update.
-	monitor := observer.NewFromFunc(
+	monitor := pipeline.NewFromFunc(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -46,7 +46,7 @@ func main() {
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
+func subscriber(id int, monitor pipeline.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 0; i < 20; i++ {
 		<-sub.Event()

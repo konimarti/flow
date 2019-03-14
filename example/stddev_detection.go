@@ -26,7 +26,7 @@ func main() {
 	// Monitors the running standard deviation of a data stream
 	// and notifies the subscribers when the value reaches a
 	// threshold of 1.4.
-	monitor := observer.NewFromFunc(
+	monitor := pipeline.NewFromFunc(
 		filters.NewChain(
 			&filters.Stddev{Window: 20},
 			&filters.Print{Writer: os.Stdout, Prefix: "Std Dev:"},
@@ -42,7 +42,7 @@ func main() {
 	subscriber(1, monitor)
 }
 
-func subscriber(id int, monitor observer.Observer) {
+func subscriber(id int, monitor pipeline.Observer) {
 	sub := monitor.Subscribe()
 	for i := 0; i < 40; i++ {
 		<-sub.Event()

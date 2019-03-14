@@ -12,7 +12,7 @@ import (
 )
 
 //TransportLayer is helper type to communicate between
-// observer and subscriber using complex data.
+// pipeline and subscriber using complex data.
 type TransportLayer struct {
 	Value float64
 	Prob  float64
@@ -57,8 +57,8 @@ func main() {
 		return rand.NormFloat64() + anomaly
 	}
 
-	// define function-based observer
-	monitor := observer.NewFromFunc(&AnomDetectFilter{analyzer: &anom}, norm, 500*time.Millisecond)
+	// define function-based pipeline
+	monitor := pipeline.NewFromFunc(&AnomDetectFilter{analyzer: &anom}, norm, 500*time.Millisecond)
 	defer monitor.Close()
 
 	// subscriber

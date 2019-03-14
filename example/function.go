@@ -22,8 +22,8 @@ func main() {
 		return val
 	}
 
-	// create channel observer and use OnValue trigger
-	monitor := observer.NewFromFunc(&filters.OnValue{3}, fn, 10*time.Millisecond)
+	// create channel pipeline and use OnValue trigger
+	monitor := pipeline.NewFromFunc(&filters.OnValue{3}, fn, 10*time.Millisecond)
 	defer monitor.Close()
 
 	// subscribers
@@ -36,7 +36,7 @@ func main() {
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
+func subscriber(id int, monitor pipeline.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 1; i < 10; i++ {
 		<-sub.Event()

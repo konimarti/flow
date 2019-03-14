@@ -22,10 +22,10 @@ func main() {
 		return sin
 	}
 
-	// create function-based observer and set an MovingAverage filter to
+	// create function-based pipeline and set an MovingAverage filter to
 	// calulcate the moving average; expected moving average = 0.0
 	// The function is evaluated every second.
-	monitor := observer.NewFromFunc(&filters.MovingAverage{Window: 20}, sinfct, 1*time.Second)
+	monitor := pipeline.NewFromFunc(&filters.MovingAverage{Window: 20}, sinfct, 1*time.Second)
 	defer monitor.Close()
 
 	// subscribers
@@ -38,7 +38,7 @@ func main() {
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
+func subscriber(id int, monitor pipeline.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 0; i < 1000; i++ {
 		<-sub.Event()
