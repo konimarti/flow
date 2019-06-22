@@ -2,35 +2,24 @@ package pipeline
 
 import "github.com/konimarti/pipeline/filters"
 
-type pipelineChannel struct {
-	observerImpl
-}
-
 //NewFromChan creates a new observer struct
 func NewFromChan(nf filters.Filter, channel chan interface{}) Observer {
-	obs := pipelineChannel{
-		observerImpl: observerImpl{
-			control: newControl(),
-			filter:  nf,
-			state:   newState(),
-		},
-	}
-	obs.run(channel)
-	return &obs
+	obs := NewObserver()
+	runChan(obs, nf, channel)
+	return obs
 }
 
-//run starts the observer with interval and fn
-func (o *pipelineChannel) run(ch chan interface{}) {
-
+//runChan starts the observer with interval and fn
+func runChan(o Observer, nf filters.Filter, ch chan interface{}) {
 	go func() {
 		for {
 			select {
 			case v := <-ch:
-				if o.observerImpl.filter.Check(v) {
-					o.Notify(o.filter.Update(v))
+				if nf.Check(v) {
+					o.Notify(nf.Update(v))
 				}
-			case <-o.control.C:
-				o.control.D <- true
+			case <-o.Control().C:
+				o.Control().D <- true
 				return
 			}
 		}
