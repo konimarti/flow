@@ -10,31 +10,31 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ## Usage
 
-	```go
-	// define stream processor (flow) that returns an observer
-	observer := flow.New(
-		filters.NewChain(
-			&filters.MovingAverage{Window: 10},
-			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
-			filters.NewSwitch(
-				&filters.AboveFloat64{0.5},
-				&filters.BelowFloat64{-0.5},
-			),
+```go
+// define stream processor (flow) that returns an observer
+observer := flow.New(
+	filters.NewChain(
+		&filters.MovingAverage{Window: 10},
+		&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
+		filters.NewSwitch(
+			&filters.AboveFloat64{0.5},
+			&filters.BelowFloat64{-0.5},
 		),
-		&flow.Func{
-			func() interface{} { return rand.NormFloat64() },
-			500*time.Millisecond,
-		},
-	)
+	),
+	&flow.Func{
+		func() interface{} { return rand.NormFloat64() },
+		500*time.Millisecond,
+	},
+)
 
-	// subscribe to observer and listen to events 
-	subscriber := observer.Subscribe()
-	for {
-		<-subscriber.Event()
-		fmt.Println("Notified:", subscriber.Value())
-		subscriber.Next()
-	}
-	```
+// subscribe to observer and listen to events 
+subscriber := observer.Subscribe()
+for {
+	<-subscriber.Event()
+	fmt.Println("Notified:", subscriber.Value())
+	subscriber.Next()
+}
+```
 
 ## Description
 
