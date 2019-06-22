@@ -1,12 +1,14 @@
-package pipeline
+package observer_test
 
 import (
 	"testing"
 	"time"
+
+	"github.com/konimarti/flow/observer"
 )
 
 func TestControl(t *testing.T) {
-	control := newControl()
+	control := observer.NewControl()
 	go func() {
 		for {
 			select {

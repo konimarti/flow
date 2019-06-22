@@ -1,20 +1,18 @@
- # Stream processing pipeline in Go
+ # Stream processing flow in Go
 
-[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/pipeline/blob/master/LICENSE)
-[![GoDoc](https://godoc.org/github.com/konimarti/pipeline?status.svg)](https://godoc.org/github.com/konimarti/pipeline)
-[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/pipeline)](https://goreportcard.com/report/github.com/konimarti/pipeline)
+[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/flow/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/konimarti/flow?status.svg)](https://godoc.org/github.com/konimarti/flow)
+[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/flow)](https://goreportcard.com/report/github.com/konimarti/flow)
 
 Stream processing in Golang with a modular notification behavior based on filters.
 
-```go get github.com/konimarti/pipeline```
+```go get github.com/konimarti/flow```
 
 ## Usage
 
-```go
-	norm := func() interface{} {
-		return rand.NormFloat64()
-	}
-	monitor := pipeline.NewFromFunc(
+	```go
+	// define stream processor (flow) that returns an observer
+	observer := flow.New(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -23,20 +21,24 @@ Stream processing in Golang with a modular notification behavior based on filter
 				&filters.BelowFloat64{-0.5},
 			),
 		),
-		norm,
-		500*time.Millisecond,
+		&flow.Func{
+			func() interface{} { return rand.NormFloat64() },
+			500*time.Millisecond,
+		},
 	)
-	subscriber := monitor.Subscribe()
+
+	// subscribe to observer and listen to events 
+	subscriber := observer.Subscribe()
 	for {
 		<-subscriber.Event()
-		fmt.Println("Notified:",subscriber.Value())
+		fmt.Println("Notified:", subscriber.Value())
 		subscriber.Next()
 	}
-```
+	```
 
 ## Description
 
-Two types of pipelines are available that are suitable for different use cases:
+Two types of flows are available that are suitable for different use cases:
 * Channel-based observers accept new values through a ```chan interface{}``` channel, and
 * Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
 
@@ -53,7 +55,7 @@ ch := make(chan interface{})
 filter := filters.OnChange{}
 
 // create observer
-obs := pipeline.NewFromChan(&filter, chan interface{})
+obs := flow.New(&filter, &flow.Chan{ch})
 
 // publish new data to channel ch
 // ch <- ..
@@ -69,19 +71,22 @@ fn := func() interface{} {
 // define filter
 filter := filters.OnChange{}
 
-// create pipeline
-obs := pipeline.NewFromFunc(&filter, fn, 1 * time.Second)
+// create flow
+obs := flow.New(&filter, &flow.Func{fn, 1 * time.Second})
 ```
 
 * Subscribers can subscribe to an observer and receive events that are triggered by the filter:
 ```go
+
 // subscribers
 subscriber := obs.Subscribe()
 for {
 	// wait for event
 	<-subscriber.Event()
+
 	// get value that triggered event
 	subscriber.Value()
+
 	// advance to next
 	subscriber.Next()
 }
@@ -134,44 +139,16 @@ Filters can be chained together using ```filters.NewChain(Filter1, Filter2, ...)
 To adjust the notification behavior, the ```filters.NewSwitch``` function can be useful, especially in cases when you want 
 to monitor a value that needs to remain within a certain range ("deadband").
 
-See [this example](http://github.com/konimarti/pipeline/tree/master/example/chain.go) for more information on logical structures 
+See [this example](http://github.com/konimarti/flow/tree/master/example/chain.go) for more information on logical structures 
 
 ### A stream-processing use case: Anomaly detection 
 
 An anomaly detection example for streams with an user-defined filter based on Lytics' [Anomalyzer](http://github.com/lytics/anomalyzer) 
-can be found [here](http://github.com/konimarti/pipeline/tree/master/example/anomaly_detection.go).
-
-## Interfaces
-
-* Observer interface:
-```go
-type Observer interface {
-	Notify(interface{})
-	Subscribe() Subscriber
-	Close()
-}
-```
-
-* Subscriber interface:
-```go
-type Subscriber interface {
-	Value() interface{}
-	Event() chan struct{}
-	Next()
-}
-```
-
-* Filter interface:
-```go
-type Filter interface {
-	Check(interface{}) bool
-	Update(interface{}) interface{}
-}
-```
+can be found [here](http://github.com/konimarti/flow/tree/master/example/anomaly_detection.go).
 
 ## More examples
 
-Check out the examples [here](http://github.com/konimarti/pipeline/tree/master/example).
+Check out the examples [here](http://github.com/konimarti/flow/tree/master/example).
 
 ## Credits
 

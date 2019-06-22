@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow/filters"
 )
 
 func TestSwitch(t *testing.T) {

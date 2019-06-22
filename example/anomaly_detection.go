@@ -7,12 +7,12 @@ import (
 
 	"github.com/lytics/anomalyzer"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
 )
 
 //TransportLayer is helper type to communicate between
-// pipeline and subscriber using complex data.
+// flow and subscriber using complex data.
 type TransportLayer struct {
 	Value float64
 	Prob  float64
@@ -57,8 +57,8 @@ func main() {
 		return rand.NormFloat64() + anomaly
 	}
 
-	// define function-based pipeline
-	monitor := pipeline.NewFromFunc(&AnomDetectFilter{analyzer: &anom}, norm, 500*time.Millisecond)
+	// define function-based flow
+	monitor := flow.New(&AnomDetectFilter{analyzer: &anom}, &flow.Func{norm, 500 * time.Millisecond})
 	defer monitor.Close()
 
 	// subscriber

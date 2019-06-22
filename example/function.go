@@ -6,8 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -22,8 +23,8 @@ func main() {
 		return val
 	}
 
-	// create channel pipeline and use OnValue trigger
-	monitor := pipeline.NewFromFunc(&filters.OnValue{3}, fn, 10*time.Millisecond)
+	// create channel flow and use OnValue trigger
+	monitor := flow.New(&filters.OnValue{3}, &flow.Func{fn, 10 * time.Millisecond})
 	defer monitor.Close()
 
 	// subscribers
@@ -36,7 +37,7 @@ func main() {
 	wg.Wait()
 }
 
-func subscriber(id int, monitor pipeline.Observer, wg *sync.WaitGroup) {
+func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 1; i < 10; i++ {
 		<-sub.Event()

@@ -1,4 +1,4 @@
-package pipeline
+package observer
 
 // Subscriber describes the interface
 // returned by subscribing to an observer

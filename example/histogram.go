@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/codahale/hdrhistogram"
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
 )
 
 //HistFilter is a user-defined filter.
@@ -33,14 +33,16 @@ func main() {
 
 	hist := hdrhistogram.New(0, 1000, 5)
 
-	// define function-based pipeline
-	monitor := pipeline.NewFromFunc(
+	// define function-based flow
+	monitor := flow.New(
 		filters.NewChain(
 			&HistFilter{hist: hist},
 			&filters.Mute{Period: 1 * time.Second},
 		),
-		fn,
-		1*time.Millisecond,
+		&flow.Func{
+			fn,
+			1 * time.Millisecond,
+		},
 	)
 
 	defer monitor.Close()
