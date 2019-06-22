@@ -8,6 +8,7 @@ import (
 
 	"github.com/konimarti/pipeline"
 	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/pipeline/observer"
 )
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 	wg.Wait()
 }
 
-func subscriber(id int, monitor pipeline.Observer, wg *sync.WaitGroup) {
+func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 0; i < 1000; i++ {
 		<-sub.Event()

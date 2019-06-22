@@ -8,6 +8,7 @@ import (
 
 	"github.com/konimarti/pipeline"
 	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/pipeline/observer"
 )
 
 func main() {
@@ -42,7 +43,7 @@ func main() {
 	subscriber(1, monitor)
 }
 
-func subscriber(id int, monitor pipeline.Observer) {
+func subscriber(id int, monitor observer.Observer) {
 	sub := monitor.Subscribe()
 	for i := 0; i < 40; i++ {
 		<-sub.Event()

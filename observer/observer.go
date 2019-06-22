@@ -1,4 +1,4 @@
-package pipeline
+package observer
 
 import (
 	"sync"
@@ -14,8 +14,8 @@ type Observer interface {
 //NewObserver
 func NewObserver() Observer {
 	o := observerI{
-		control: newControl(),
-		state:   newState(),
+		control: NewControl(),
+		state:   NewState(),
 	}
 	return &o
 }
@@ -32,7 +32,7 @@ func (o *observerI) Notify(value interface{}) {
 	o.Lock()
 	defer o.Unlock()
 	o.state.Value = value
-	next := newState()
+	next := NewState()
 	o.state.Next = next
 	close(o.state.C)
 	o.state = o.state.Next
@@ -48,15 +48,4 @@ func (o *observerI) Subscribe() Subscriber {
 //Control
 func (o *observerI) Control() control {
 	return o.control
-}
-
-// state
-type state struct {
-	C     chan struct{}
-	Value interface{}
-	Next  *state
-}
-
-func newState() *state {
-	return &state{C: make(chan struct{})}
 }

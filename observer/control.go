@@ -1,4 +1,4 @@
-package pipeline
+package observer
 
 //The control struct is used to shut down an observer gracefully.
 //It implements the io.Closer interface.
@@ -15,8 +15,8 @@ func (c *control) Close() {
 	}
 }
 
-//newControl creates a new control structure for graceful closing
+//NewControl creates a new control structure for graceful closing
 //of the observer run loop
-func newControl() control {
+func NewControl() control {
 	return control{C: make(chan bool), D: make(chan bool)}
 }
