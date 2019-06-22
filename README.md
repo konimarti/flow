@@ -8,7 +8,9 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ```go get github.com/konimarti/flow```
 
-## Usage
+## Example
+
+* Generate a stream of random numbers from a standard normal, calculate moving average, print average and check if average is above or below 0.5 and -0.5, respectively. If so, then notify the subscribers.
 
 ```go
 // define stream processor (flow) that returns an observer
