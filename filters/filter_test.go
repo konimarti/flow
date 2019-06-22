@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow/filters"
 )
 
 var configT = []struct {

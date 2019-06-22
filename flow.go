@@ -1,10 +1,10 @@
-package pipeline
+package flow
 
 import (
 	"time"
 
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 //New

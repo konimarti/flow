@@ -6,19 +6,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
 	// set up channel
 	ch := make(chan interface{})
 
-	// create channel-based pipeline and set an OnValue trigger.
-	// The pipeline will send notifications every time the defined value 3
+	// create channel-based flow and set an OnValue trigger.
+	// The flow will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := pipeline.New(&filters.OnValue{3}, &pipeline.Chan{ch})
+	monitor := flow.New(&filters.OnValue{3}, &flow.Chan{ch})
 	defer monitor.Close()
 
 	// syncrhoniztion

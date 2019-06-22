@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 	// Monitor Moving Average over 10 samples and notifies subscribers,
 	// when average is below -0.5 or above 0.5.
 	// Also, print out moving average with every update.
-	monitor := pipeline.New(
+	monitor := flow.New(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -32,7 +32,7 @@ func main() {
 				&filters.BelowFloat64{-0.5},
 			),
 		),
-		&pipeline.Func{
+		&flow.Func{
 			norm,
 			500 * time.Millisecond,
 		},

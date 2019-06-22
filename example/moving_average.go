@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -23,11 +23,11 @@ func main() {
 		return sin
 	}
 
-	// create function-based pipeline and set an MovingAverage filter to
+	// create function-based flow and set an MovingAverage filter to
 	// calulcate the moving average; expected moving average = 0.0
 	// The function is evaluated every second.
-	monitor := pipeline.New(&filters.MovingAverage{Window: 20},
-		&pipeline.Func{sinfct, 1 * time.Second})
+	monitor := flow.New(&filters.MovingAverage{Window: 20},
+		&flow.Func{sinfct, 1 * time.Second})
 	defer monitor.Close()
 
 	// subscribers

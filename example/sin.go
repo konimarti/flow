@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -23,11 +23,11 @@ func main() {
 		return sin
 	}
 
-	// create function-based pipeline and set an AboveFloat64 notifier to send a notification
+	// create function-based flow and set an AboveFloat64 notifier to send a notification
 	// everytime the sinus function returns a value greater than 0.9.
 	// The sinus function is evaluated every second.
-	monitor := pipeline.New(&filters.AboveFloat64{0.9},
-		&pipeline.Func{sinfct, 1 * time.Second})
+	monitor := flow.New(&filters.AboveFloat64{0.9},
+		&flow.Func{sinfct, 1 * time.Second})
 	defer monitor.Close()
 
 	// subscribers

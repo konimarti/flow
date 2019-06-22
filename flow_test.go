@@ -1,12 +1,12 @@
-package pipeline_test
+package flow_test
 
 import (
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
 )
 
 var config = []struct {
@@ -72,7 +72,7 @@ func TestChannelObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := pipeline.New(observerCfg.TrFunc(start), &pipeline.Chan{ch})
+			observer := flow.New(observerCfg.TrFunc(start), &flow.Chan{ch})
 			subscriber := observer.Subscribe()
 			startC <- true
 
@@ -125,7 +125,7 @@ func TestIntervalObservers(t *testing.T) {
 			}
 
 			// create observer
-			observer := pipeline.New(observerCfg.TrFunc(start), &pipeline.Func{fn, refresh})
+			observer := flow.New(observerCfg.TrFunc(start), &flow.Func{fn, refresh})
 			subscriber := observer.Subscribe()
 			// run test
 			select {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow/observer"
 )
 
 func TestControl(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -23,8 +23,8 @@ func main() {
 		return val
 	}
 
-	// create channel pipeline and use OnValue trigger
-	monitor := pipeline.New(&filters.OnValue{3}, &pipeline.Func{fn, 10 * time.Millisecond})
+	// create channel flow and use OnValue trigger
+	monitor := flow.New(&filters.OnValue{3}, &flow.Func{fn, 10 * time.Millisecond})
 	defer monitor.Close()
 
 	// subscribers

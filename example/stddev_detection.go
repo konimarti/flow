@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/konimarti/pipeline"
-	"github.com/konimarti/pipeline/filters"
-	"github.com/konimarti/pipeline/observer"
+	"github.com/konimarti/flow"
+	"github.com/konimarti/flow/filters"
+	"github.com/konimarti/flow/observer"
 )
 
 func main() {
@@ -27,14 +27,14 @@ func main() {
 	// Monitors the running standard deviation of a data stream
 	// and notifies the subscribers when the value reaches a
 	// threshold of 1.4.
-	monitor := pipeline.New(
+	monitor := flow.New(
 		filters.NewChain(
 			&filters.Stddev{Window: 20},
 			&filters.Print{Writer: os.Stdout, Prefix: "Std Dev:"},
 			&filters.AboveFloat64{1.4},
 			&filters.Mute{Period: 2 * time.Second},
 		),
-		&pipeline.Func{
+		&flow.Func{
 			norm,
 			500 * time.Millisecond,
 		},
