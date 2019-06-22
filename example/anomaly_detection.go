@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// define function-based pipeline
-	monitor := pipeline.NewFromFunc(&AnomDetectFilter{analyzer: &anom}, norm, 500*time.Millisecond)
+	monitor := pipeline.New(&AnomDetectFilter{analyzer: &anom}, &pipeline.Func{norm, 500 * time.Millisecond})
 	defer monitor.Close()
 
 	// subscriber

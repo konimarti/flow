@@ -26,7 +26,8 @@ func main() {
 	// create function-based pipeline and set an MovingAverage filter to
 	// calulcate the moving average; expected moving average = 0.0
 	// The function is evaluated every second.
-	monitor := pipeline.NewFromFunc(&filters.MovingAverage{Window: 20}, sinfct, 1*time.Second)
+	monitor := pipeline.New(&filters.MovingAverage{Window: 20},
+		&pipeline.Func{sinfct, 1 * time.Second})
 	defer monitor.Close()
 
 	// subscribers

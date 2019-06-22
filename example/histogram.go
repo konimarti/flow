@@ -34,13 +34,15 @@ func main() {
 	hist := hdrhistogram.New(0, 1000, 5)
 
 	// define function-based pipeline
-	monitor := pipeline.NewFromFunc(
+	monitor := pipeline.New(
 		filters.NewChain(
 			&HistFilter{hist: hist},
 			&filters.Mute{Period: 1 * time.Second},
 		),
-		fn,
-		1*time.Millisecond,
+		&pipeline.Func{
+			fn,
+			1 * time.Millisecond,
+		},
 	)
 
 	defer monitor.Close()

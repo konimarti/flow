@@ -27,15 +27,17 @@ func main() {
 	// Monitors the running standard deviation of a data stream
 	// and notifies the subscribers when the value reaches a
 	// threshold of 1.4.
-	monitor := pipeline.NewFromFunc(
+	monitor := pipeline.New(
 		filters.NewChain(
 			&filters.Stddev{Window: 20},
 			&filters.Print{Writer: os.Stdout, Prefix: "Std Dev:"},
 			&filters.AboveFloat64{1.4},
 			&filters.Mute{Period: 2 * time.Second},
 		),
-		norm,
-		500*time.Millisecond,
+		&pipeline.Func{
+			norm,
+			500 * time.Millisecond,
+		},
 	)
 	defer monitor.Close()
 

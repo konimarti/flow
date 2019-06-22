@@ -28,8 +28,10 @@ func main() {
 			&filters.Print{Writer: os.Stdout, Prefix: ""},
 			&filters.Sigma{Window: 20, Factor: 2},
 		),
-		norm,
-		500*time.Millisecond,
+		&pipeline.Func{
+			norm,
+			500 * time.Millisecond,
+		},
 	)
 	defer monitor.Close()
 

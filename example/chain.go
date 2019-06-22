@@ -23,7 +23,7 @@ func main() {
 	// Monitor Moving Average over 10 samples and notifies subscribers,
 	// when average is below -0.5 or above 0.5.
 	// Also, print out moving average with every update.
-	monitor := pipeline.NewFromFunc(
+	monitor := pipeline.New(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -32,8 +32,10 @@ func main() {
 				&filters.BelowFloat64{-0.5},
 			),
 		),
-		norm,
-		500*time.Millisecond,
+		&pipeline.Func{
+			norm,
+			500 * time.Millisecond,
+		},
 	)
 	defer monitor.Close()
 

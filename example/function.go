@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// create channel pipeline and use OnValue trigger
-	monitor := pipeline.NewFromFunc(&filters.OnValue{3}, fn, 10*time.Millisecond)
+	monitor := pipeline.New(&filters.OnValue{3}, &pipeline.Func{fn, 10 * time.Millisecond})
 	defer monitor.Close()
 
 	// subscribers

@@ -18,7 +18,7 @@ func main() {
 	// create channel-based pipeline and set an OnValue trigger.
 	// The pipeline will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := pipeline.NewFromChan(&filters.OnValue{3}, ch)
+	monitor := pipeline.New(&filters.OnValue{3}, &pipeline.Chan{ch})
 	defer monitor.Close()
 
 	// syncrhoniztion
