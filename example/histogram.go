@@ -34,7 +34,7 @@ func main() {
 	hist := hdrhistogram.New(0, 1000, 5)
 
 	// define function-based flow
-	monitor := flow.New(
+	flow := flow.New(
 		filters.NewChain(
 			&HistFilter{hist: hist},
 			&filters.Mute{Period: 1 * time.Second},
@@ -44,15 +44,13 @@ func main() {
 			1 * time.Millisecond,
 		},
 	)
-
-	defer monitor.Close()
+	defer flow.Close()
 
 	// subscriber
-	sub := monitor.Subscribe()
+	sub := flow.Subscribe()
 	for {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Percentile: %v", sub.Value())
 		fmt.Printf("\n")
-		sub.Next()
 	}
 }

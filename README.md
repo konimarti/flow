@@ -8,23 +8,55 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ```go get github.com/konimarti/flow```
 
+## Usage
+
+1. Define a data stream source: 
+```go
+yourSource := flow.Func{
+	func() interface{} {
+		return rand.Float64()
+	},
+	500 * time.Millisecond,
+}
+```
+
+2. Define the stream data processing (i.e. your filters):
+```go
+yourFilters := filters.AboveFloat64{0.5}
+```
+
+2. Create your flow and subscribe to the results:
+```go
+yourFlow := flow.New(
+	yourFilters,
+	yourSource,
+)
+results := yourFlow.Subscribe()
+for {
+	<-results.C()
+	fmt.Println(results.Value())
+}
+```
+
 ## Example
 
-* Apply a low pass filter (exponential smoothing) to a sequency of random numbers between 0 and 1:
+* Apply a low-pass filter (exponential smoothing) to a sequence of random numbers between 0 and 1:
 
 ```go
-	fn := func(){ return rand.Float64() }
-	observer := flow.New(
-		&filters.Lowpass{A: 0.1}, 
-		&flow.Func{ fn, 500 * time.Millisecond}
-	)
+flow := flow.New(
+	&filters.Lowpass{A: 0.1}, 
+	&flow.Func{ 
+		func(){ return rand.Float64() },
+		500 * time.Millisecond,
+	},
+)
 ```
 
 * Generate a stream of random numbers from a standard normal, calculate moving average, print average and check if average is above or below 0.5 and -0.5, respectively. If so, then notify the subscribers.
 
 ```go
 // define stream processor (flow) that returns an observer
-observer := flow.New(
+flow := flow.New(
 	filters.NewChain(
 		&filters.MovingAverage{Window: 10},
 		&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -40,67 +72,69 @@ observer := flow.New(
 )
 
 // subscribe to observer and listen to events 
-subscriber := observer.Subscribe()
+subscriber := flow.Subscribe()
 for {
-	<-subscriber.Event()
+	<-subscriber.C()
 	fmt.Println("Notified:", subscriber.Value())
-	subscriber.Next()
 }
 ```
 
 ## Description
 
 Two types of flows are available that are suitable for different use cases:
-* Channel-based observers accept new values through a ```chan interface{}``` channel, and
-* Function-based observers collect new values in regular intervals from a ```func() interface{}``` function.
+* Channel-based flows accept new values through a ```chan interface{}``` channel, and
+* Function-based flows collect new values in regular intervals from a ```func() interface{}``` function.
 
-Channel-based observers are useful in cases where we receive specific events. 
-Function-based observers can be used to monitor any object or state of resources 
+Channel-based flows are useful in cases where we receive specific events. 
+Function-based flows can be used to monitor any object or state of resources 
 (i.e. reading data from [OPC](http://github.com/konimarti/opc), HTTP requests, etc.).
 
-* To get a channel-based observer:
+* To get a channel-based flow:
 ```go
-// define channel
+// define channel 
 ch := make(chan interface{})
 
-// define filter
+// define your filter(s) for data processing
 filter := filters.OnChange{}
 
-// create observer
-obs := flow.New(&filter, &flow.Chan{ch})
+// create your flow
+yourChannelFlow := flow.New(
+	&filter, 
+	&flow.Chan{ch},
+)
 
 // publish new data to channel ch
 // ch <- ..
 ```
 
-* To get a function-based observer:
+* To get a function-based flow:
 ```go
 // define a function that returns the values
 fn := func() interface{} {
 	return rand.Float64()
 }
 
-// define filter
+// define your filter(s)
 filter := filters.OnChange{}
 
-// create flow
-obs := flow.New(&filter, &flow.Func{fn, 1 * time.Second})
+// create your flow
+yourFunctionFlow := flow.New(
+	&filter, 
+	&flow.Func{
+		fn, 
+		1 * time.Second},
+)
 ```
 
-* Subscribers can subscribe to an observer and receive events that are triggered by the filter:
+* You can subscribe to a flow in order to receive the results from the filter(s):
 ```go
-
-// subscribers
-subscriber := obs.Subscribe()
+results := yourFlow.Subscribe()
 for {
-	// wait for event
-	<-subscriber.Event()
+	// wait for a result
+	<-results.C()
 
-	// get value that triggered event
-	subscriber.Value()
-
-	// advance to next
-	subscriber.Next()
+	// get value from the filters
+	results.Value()
 }
 
 ```
@@ -115,17 +149,17 @@ The following filters are currently implemented in this package:
 * Notification filters:
   - ```None{}```: No filter is applied. All values are sent to the observers unfilitered and unprocessed.
   - ```Sink{}```: Blocks the flow of data. No values are sent to the observers.
-  - ```Mute{Period}```: Mute shuts down all notifications after an event for a specific period.
+  - ```Mute{Duration time.Duration}```: Mute shuts down all notifications after an event for a specific duration.
   - ```OnChange{}```: Notifies when the value changes.
-  - ```OnValue{value}```: Notifies when the new value matches the defined value at initialization. 
-  - ```AboveFloat64{threshold}```: Notifies when a new float64 is above the pre-defined float64 threshold.
-  - ```BelowFloat64{threshold}```: Notifies when a new float64 is below the pre-defined float64 threshold.
-  - ```Sigma{Window, Factor}```: Sigma checks if the incoming value is a certain multiple (=factor) of standard deviations away from the mean.
+  - ```OnValue{value float64}```: Notifies when the new value matches the defined value at initialization. 
+  - ```AboveFloat64{threshold float64}```: Notifies when a new float64 is above the pre-defined float64 threshold.
+  - ```BelowFloat64{threshold float64}```: Notifies when a new float64 is below the pre-defined float64 threshold.
+  - ```Sigma{Window int, Factor float64}```: Sigma checks if the incoming value is a certain multiple (=factor) of standard deviations away from the mean.
 
 * Stream-processing filters:
-  - ```MovingAverage{Window}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
-  - ```StdDev{Window}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
-  - ```Lowpass{A}```: Performs low-pass filtering on the input data (exponential smoothing) with the smoothing factor A. 
+  - ```MovingAverage{Window int}```: Calculates the moving average over a certain sample size and sends the current mean to all subscribers.
+  - ```StdDev{Window int}```: Calculates the standard deviation over a certain sample size and sends the current standard deviation to all subscribers.
+  - ```LowPass{A float64}```: Performs low-pass filtering on the input data (exponential smoothing) with the smoothing factor A. 
 
 ### User-defined filters
 
@@ -156,7 +190,7 @@ See [this example](http://github.com/konimarti/flow/tree/master/example/chain.go
 ### A stream-processing use case: Anomaly detection 
 
 An anomaly detection example for streams with an user-defined filter based on Lytics' [Anomalyzer](http://github.com/lytics/anomalyzer) 
-can be found [here](http://github.com/konimarti/flow/tree/master/example/anomaly_detection.go).
+can be found [here](http://github.com/konimarti/flow/tree/master/example/anomaly.go).
 
 ## More examples
 

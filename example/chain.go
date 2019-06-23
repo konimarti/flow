@@ -13,17 +13,15 @@ import (
 )
 
 func main() {
-	// define function
-	norm := func() interface{} {
-		val := rand.NormFloat64()
-		//fmt.Println("Publishing", val)
-		return val
+	// define generator function
+	fn := func() interface{} {
+		return rand.NormFloat64()
 	}
 
-	// Monitor Moving Average over 10 samples and notifies subscribers,
-	// when average is below -0.5 or above 0.5.
-	// Also, print out moving average with every update.
-	monitor := flow.New(
+	// Flow consits of calculatingaa moving average with 10 samples,
+	// printing out the average,
+	// and checking if it is outside a certain boundary.
+	flow := flow.New(
 		filters.NewChain(
 			&filters.MovingAverage{Window: 10},
 			&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -33,28 +31,27 @@ func main() {
 			),
 		),
 		&flow.Func{
-			norm,
+			fn,
 			500 * time.Millisecond,
 		},
 	)
-	defer monitor.Close()
+	defer flow.Close()
 
 	// subscribers
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
+	go subscriber(1, flow, &wg)
+	go subscriber(2, flow, &wg)
 
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
-	sub := monitor.Subscribe()
+func subscriber(id int, flow observer.Observer, wg *sync.WaitGroup) {
+	sub := flow.Subscribe()
 	for i := 0; i < 20; i++ {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Subscriber id(%d) got notified: %2.4f\n", id, sub.Value().(float64))
-		sub.Next()
 	}
 	wg.Done()
 }

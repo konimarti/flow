@@ -24,25 +24,24 @@ func main() {
 	}
 
 	// create channel flow and use OnValue trigger
-	monitor := flow.New(&filters.OnValue{3}, &flow.Func{fn, 10 * time.Millisecond})
-	defer monitor.Close()
+	flow := flow.New(&filters.OnValue{3}, &flow.Func{fn, 10 * time.Millisecond})
+	defer flow.Close()
 
 	// subscribers
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
+	go subscriber(1, flow, &wg)
+	go subscriber(2, flow, &wg)
 
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
-	sub := monitor.Subscribe()
+func subscriber(id int, flow observer.Observer, wg *sync.WaitGroup) {
+	sub := flow.Subscribe()
 	for i := 1; i < 10; i++ {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Subscriber id(%d) got notified [%d]: %v\n", id, i, sub.Value())
-		sub.Next()
 	}
 	wg.Done()
 }

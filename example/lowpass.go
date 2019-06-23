@@ -18,17 +18,16 @@ func main() {
 	}
 
 	// apply a low pass filter (exponential smoothing) to a sequency of random numbers between 0 and 1
-	observer := flow.New(
-		&filters.Lowpass{A: 0.1}, 
-		&flow.Func{fn, 500 * time.Millisecond}
+	flow := flow.New(
+		&filters.LowPass{A: 0.1},
+		&flow.Func{fn, 500 * time.Millisecond},
 	)
-	defer observer.Close()
+	defer flow.Close()
 
 	// subscribers
-	sub := observer.Subscribe()
+	sub := flow.Subscribe()
 	for {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("filtered: %v\n", sub.Value())
-		sub.Next()
 	}
 }

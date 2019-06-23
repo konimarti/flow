@@ -14,7 +14,7 @@ import (
 func main() {
 	// define function
 	var counter int
-	norm := func() interface{} {
+	fn := func() interface{} {
 		val := rand.NormFloat64()
 		counter++
 		factor := 1.0
@@ -27,7 +27,7 @@ func main() {
 	// Monitors the running standard deviation of a data stream
 	// and notifies the subscribers when the value reaches a
 	// threshold of 1.4.
-	monitor := flow.New(
+	flow := flow.New(
 		filters.NewChain(
 			&filters.Stddev{Window: 20},
 			&filters.Print{Writer: os.Stdout, Prefix: "Std Dev:"},
@@ -35,21 +35,20 @@ func main() {
 			&filters.Mute{Period: 2 * time.Second},
 		),
 		&flow.Func{
-			norm,
+			fn,
 			500 * time.Millisecond,
 		},
 	)
-	defer monitor.Close()
+	defer flow.Close()
 
 	// subscribers
-	subscriber(1, monitor)
+	subscriber(1, flow)
 }
 
-func subscriber(id int, monitor observer.Observer) {
-	sub := monitor.Subscribe()
+func subscriber(id int, flow observer.Observer) {
+	sub := flow.Subscribe()
 	for i := 0; i < 40; i++ {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Std Dev: %2.4f -- Anomaly detected!\n", sub.Value().(float64))
-		sub.Next()
 	}
 }

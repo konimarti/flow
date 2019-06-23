@@ -26,26 +26,25 @@ func main() {
 	// create function-based flow and set an MovingAverage filter to
 	// calulcate the moving average; expected moving average = 0.0
 	// The function is evaluated every second.
-	monitor := flow.New(&filters.MovingAverage{Window: 20},
+	flow := flow.New(&filters.MovingAverage{Window: 20},
 		&flow.Func{sinfct, 1 * time.Second})
-	defer monitor.Close()
+	defer flow.Close()
 
 	// subscribers
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
+	go subscriber(1, flow, &wg)
+	go subscriber(2, flow, &wg)
 
 	wg.Wait()
 }
 
-func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
-	sub := monitor.Subscribe()
+func subscriber(id int, flow observer.Observer, wg *sync.WaitGroup) {
+	sub := flow.Subscribe()
 	for i := 0; i < 1000; i++ {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Subscriber id(%d) got notified: %2.4f\n", id, sub.Value().(float64))
-		sub.Next()
 	}
 	wg.Done()
 }
