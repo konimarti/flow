@@ -10,6 +10,16 @@ Stream processing in Golang with a modular notification behavior based on filter
 
 ## Example
 
+* Apply a low pass filter (exponential smoothing) to a sequency of random numbers between 0 and 1:
+
+```go
+	fn := func(){ return rand.Float64() }
+	observer := flow.New(
+		&filters.Lowpass{A: 0.1}, 
+		&flow.Func{ fn, 500 * time.Millisecond}
+	)
+```
+
 * Generate a stream of random numbers from a standard normal, calculate moving average, print average and check if average is above or below 0.5 and -0.5, respectively. If so, then notify the subscribers.
 
 ```go
