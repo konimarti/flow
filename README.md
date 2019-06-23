@@ -25,7 +25,7 @@ yourSource := flow.Func{
 yourFilters := filters.AboveFloat64{0.5}
 ```
 
-2. Create your flow and subscribe to the results:
+3. Create your flow and subscribe to the results:
 ```go
 yourFlow := flow.New(
 	yourFilters,
@@ -56,7 +56,7 @@ flow := flow.New(
 
 ```go
 // define stream processor (flow) that returns an observer
-flow := flow.New(
+yourFlow := flow.New(
 	filters.NewChain(
 		&filters.MovingAverage{Window: 10},
 		&filters.Print{Writer: os.Stdout, Prefix: "Moving average:"},
@@ -71,11 +71,11 @@ flow := flow.New(
 	},
 )
 
-// subscribe to observer and listen to events 
-subscriber := flow.Subscribe()
+// subscribe to flow and listen to events 
+results := yourFlow.Subscribe()
 for {
-	<-subscriber.C()
-	fmt.Println("Notified:", subscriber.Value())
+	<-results.C()
+	fmt.Println("Notified:", results.Value())
 }
 ```
 
@@ -122,7 +122,8 @@ yourFunctionFlow := flow.New(
 	&filter, 
 	&flow.Func{
 		fn, 
-		1 * time.Second},
+		1 * time.Second,
+	},
 )
 ```
 
