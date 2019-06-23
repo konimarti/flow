@@ -260,7 +260,7 @@ func TestMute(t *testing.T) {
 
 	for _, v := range values {
 		//new trigger
-		trig := filters.Mute{Period: 100 * time.Millisecond}
+		trig := filters.Mute{Duration: 100 * time.Millisecond}
 
 		b1 := trig.Check(v)
 		b2 := trig.Check(v)
@@ -285,7 +285,7 @@ func TestMute(t *testing.T) {
 	}
 }
 
-func TestLowpass(t *testing.T) {
+func TestLowPass(t *testing.T) {
 	a := []float64{0.0, 1.0, 0.5}
 	input := []float64{1.0, 2.0, 3.0}
 	expected := [][]float64{
@@ -295,7 +295,7 @@ func TestLowpass(t *testing.T) {
 	}
 
 	for i, factor := range a {
-		trig := filters.Lowpass{A: factor}
+		trig := filters.LowPass{A: factor}
 		for j, in := range input {
 			//test check
 			if !trig.Check(in) {

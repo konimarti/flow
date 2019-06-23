@@ -18,8 +18,8 @@ func main() {
 	// create channel-based flow and set an OnValue trigger.
 	// The flow will send notifications every time the defined value 3
 	// is send through the channel.
-	monitor := flow.New(&filters.OnValue{3}, &flow.Chan{ch})
-	defer monitor.Close()
+	flow := flow.New(&filters.OnValue{3}, &flow.Chan{ch})
+	defer flow.Close()
 
 	// syncrhoniztion
 	var wg sync.WaitGroup
@@ -33,8 +33,8 @@ func main() {
 	// subscribers
 	wg.Add(2)
 
-	go subscriber(1, monitor, &wg)
-	go subscriber(2, monitor, &wg)
+	go subscriber(1, flow, &wg)
+	go subscriber(2, flow, &wg)
 
 	wg.Wait()
 }
@@ -62,9 +62,8 @@ func publisher(id int, ch chan interface{}, wg *sync.WaitGroup) {
 func subscriber(id int, monitor observer.Observer, wg *sync.WaitGroup) {
 	sub := monitor.Subscribe()
 	for i := 1; i < 10; i++ {
-		<-sub.Event()
+		<-sub.C()
 		fmt.Printf("Subscriber %d got notified: value = %v, counts = %d\n", id, sub.Value(), i)
-		sub.Next()
 	}
 	wg.Done()
 }

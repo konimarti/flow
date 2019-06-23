@@ -53,7 +53,7 @@ func (s *Sink) Check(newValue interface{}) bool {
 // It blocks the forwarding of values within a
 // predefined time duration.
 type Mute struct {
-	Period   time.Duration
+	Duration time.Duration
 	previous time.Time
 	Model
 }
@@ -61,7 +61,7 @@ type Mute struct {
 //Check always returns true.
 func (m *Mute) Check(newValue interface{}) bool {
 	t := time.Now()
-	if t.Sub(m.previous) < m.Period {
+	if t.Sub(m.previous) < m.Duration {
 		return false
 	}
 	m.previous = t
@@ -238,18 +238,18 @@ func (s *Stddev) Update(newValue interface{}) interface{} {
 	return math.Sqrt((total*sum2 - sum*sum) / (total * total)) // sqrt(E[x*x] - E[x]^2)
 }
 
-// Lowpass implements exponential smoothing.
-// Can be used as RC lowpass filter when a = dt / (RC + dt).
+// LowPass implements exponential smoothing.
+// Can be used as RC low-pass filter when a = dt / (RC + dt).
 // Check returns always true for data processing
 // Update returns the filtered values.
-type Lowpass struct {
+type LowPass struct {
 	A        float64
 	oldValue float64
 	Model
 }
 
 //Update returns the exponentially smoothened parameter
-func (lp *Lowpass) Update(newValue interface{}) interface{} {
+func (lp *LowPass) Update(newValue interface{}) interface{} {
 	x := newValue.(float64)
 	lpValue := lp.A*x + (1-lp.A)*lp.oldValue
 	lp.oldValue = lpValue

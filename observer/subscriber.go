@@ -3,23 +3,30 @@ package observer
 // Subscriber describes the interface
 // returned by subscribing to an observer
 type Subscriber interface {
+	C() chan struct{}
 	Value() interface{}
-	Event() chan struct{}
-	Next()
 }
 
 type subscriber struct {
 	state *state
 }
 
+//Value return the current value
 func (s *subscriber) Value() interface{} {
-	return s.state.Value
+	v := s.v()
+	s.next()
+	return v
 }
 
-func (s *subscriber) Event() chan struct{} {
+//C returns a channel and signals if Value() can be called
+func (s *subscriber) C() chan struct{} {
 	return s.state.C
 }
 
-func (s *subscriber) Next() {
+func (s *subscriber) v() interface{} {
+	return s.state.Value
+}
+
+func (s *subscriber) next() {
 	s.state = s.state.Next
 }

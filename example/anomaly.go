@@ -46,7 +46,7 @@ func main() {
 	anom, _ := anomalyzer.NewAnomalyzer(conf, []float64{})
 
 	// define function
-	norm := func() interface{} {
+	fn := func() interface{} {
 		var anomaly float64
 		if rand.Float64() < 0.1 {
 			anomaly = float64(rand.Intn(10))
@@ -58,19 +58,24 @@ func main() {
 	}
 
 	// define function-based flow
-	monitor := flow.New(&AnomDetectFilter{analyzer: &anom}, &flow.Func{norm, 500 * time.Millisecond})
-	defer monitor.Close()
+	flow := flow.New(
+		&AnomDetectFilter{analyzer: &anom},
+		&flow.Func{
+			fn,
+			500 * time.Millisecond,
+		},
+	)
+	defer flow.Close()
 
 	// subscriber
-	sub := monitor.Subscribe()
+	sub := flow.Subscribe()
 	for {
-		<-sub.Event()
+		<-sub.C()
 		tl := sub.Value().(TransportLayer)
 		fmt.Printf("Value %+3.3f is anomalous with probability %3.3f", tl.Value, tl.Prob)
 		if tl.Prob > 0.9 {
 			fmt.Printf(" -- Anomaly detected!")
 		}
 		fmt.Printf("\n")
-		sub.Next()
 	}
 }
