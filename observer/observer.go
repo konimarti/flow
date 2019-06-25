@@ -12,7 +12,7 @@ type Observer interface {
 	Close()
 }
 
-//NewObserver retuns an implementation of the observer interface
+//NewObserver returns an implementation of the observer interface
 func NewObserver() Observer {
 	o := observerI{
 		control: NewControl(),
