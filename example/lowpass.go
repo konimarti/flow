@@ -20,7 +20,10 @@ func main() {
 	// apply a low pass filter (exponential smoothing) to a sequency of random numbers between 0 and 1
 	flow := flow.New(
 		&filters.LowPass{A: 0.1},
-		&flow.Func{fn, 500 * time.Millisecond},
+		&flow.Func{
+			Fn:      fn,
+			Refresh: 500 * time.Millisecond,
+		},
 	)
 	defer flow.Close()
 

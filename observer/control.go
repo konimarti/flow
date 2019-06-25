@@ -1,6 +1,6 @@
 package observer
 
-//The control struct is used to shut down an observer gracefully.
+//control struct is used to shut down an observer gracefully.
 //It implements the io.Closer interface.
 type control struct {
 	C chan bool

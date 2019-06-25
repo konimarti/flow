@@ -4,6 +4,7 @@ import (
 	"sync"
 )
 
+//Observer defines the interface for the observer design patter
 type Observer interface {
 	Notify(interface{})
 	Subscribe() Subscriber
@@ -11,7 +12,7 @@ type Observer interface {
 	Close()
 }
 
-//NewObserver
+//NewObserver retuns an implementation of the observer interface
 func NewObserver() Observer {
 	o := observerI{
 		control: NewControl(),

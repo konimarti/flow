@@ -7,7 +7,7 @@ type state struct {
 	Next  *state
 }
 
-//NewState
+//NewState creats a new state
 func NewState() *state {
 	return &state{C: make(chan struct{})}
 }

@@ -7,23 +7,23 @@ import (
 	"github.com/konimarti/flow/observer"
 )
 
-//New
+//New return an Observer that receive the results of the flow
 func New(nf filters.Filter, s Source) observer.Observer {
 	return s.Run(nf)
 }
 
-//Source
+//Source is the interface for input for the flow
 type Source interface {
 	Run(f filters.Filter) observer.Observer
 }
 
-//Func
+//Func implements the Source interface and regularly calls a function
 type Func struct {
 	Fn      func() interface{}
 	Refresh time.Duration
 }
 
-//Run
+//Run calls the given function in regular intervals
 func (f *Func) Run(nf filters.Filter) observer.Observer {
 	o := observer.NewObserver()
 	c := time.Tick(f.Refresh)
@@ -43,12 +43,12 @@ func (f *Func) Run(nf filters.Filter) observer.Observer {
 	return o
 }
 
-//Chan
+//Chan implements the Source interface and provides the input for the flow
 type Chan struct {
 	Ch chan interface{}
 }
 
-//Run
+//Run passed the channel data to the filters
 func (c *Chan) Run(nf filters.Filter) observer.Observer {
 	o := observer.NewObserver()
 	go func() {
