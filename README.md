@@ -44,7 +44,7 @@ for {
 
 ```go
 flow := flow.New(
-	&filters.Lowpass{A: 0.1}, 
+	&filters.LowPass{A: 0.1}, 
 	&flow.Func{ 
 		func(){ return rand.Float64() },
 		500 * time.Millisecond,
