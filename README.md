@@ -152,6 +152,7 @@ The following filters are currently implemented in this package:
   - ```Sink{}```: Blocks the flow of data. No values are sent to the observers.
   - ```Mute{Duration time.Duration}```: Mute shuts down all notifications after an event for a specific duration.
   - ```OnChange{}```: Notifies when the value changes.
+  - ```OnRisingFlank{}```: Notifies when the value increases.
   - ```OnValue{value float64}```: Notifies when the new value matches the defined value at initialization. 
   - ```AboveFloat64{threshold float64}```: Notifies when a new float64 is above the pre-defined float64 threshold.
   - ```BelowFloat64{threshold float64}```: Notifies when a new float64 is below the pre-defined float64 threshold.

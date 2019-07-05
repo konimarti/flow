@@ -313,3 +313,29 @@ func TestLowPass(t *testing.T) {
 		}
 	}
 }
+
+func TestOnRisingFlank(t *testing.T) {
+	for _, cfg := range configT {
+		if cfg.Type == "string" {
+			continue
+		}
+
+		//new trigger
+		trig := filters.OnRisingFlank{}
+		trig.Update(cfg.Value)
+
+		//test check
+		if trig.Check(cfg.Value) {
+			t.Error("should not fire because value are the same.")
+		}
+		if !trig.Check(cfg.Update) {
+			t.Error("should not fire because value are not the same.")
+		}
+
+		//test update
+		trig.Update(cfg.Update)
+		if trig.Check(cfg.Update) {
+			t.Error("should not fire because value are the same after update.")
+		}
+	}
+}

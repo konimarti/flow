@@ -255,3 +255,20 @@ func (lp *LowPass) Update(newValue interface{}) interface{} {
 	lp.oldValue = lpValue
 	return lpValue
 }
+
+// OnRisingFlank struct implements the Filter interface.
+// It triggers when the value under observation increases.
+type OnRisingFlank struct {
+	Value interface{}
+}
+
+//Check if new value is different from saved value.
+func (t *OnRisingFlank) Check(newValue interface{}) bool {
+	return GetFloat64(newValue) > GetFloat64(t.Value)
+}
+
+//Update updates stored value with new value and sends it to the observers.
+func (t *OnRisingFlank) Update(newValue interface{}) interface{} {
+	t.Value = newValue
+	return newValue
+}
