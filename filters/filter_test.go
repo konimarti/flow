@@ -321,17 +321,24 @@ func TestOnRisingFlank(t *testing.T) {
 		}
 
 		//new trigger
-		trig := filters.OnRisingFlank{}
-		trig.Update(cfg.Value)
+		trig := filters.OnRisingFlank{cfg.Value}
 
-		//test check
+		// current = 1, check = 1 => not fire
 		if trig.Check(cfg.Value) {
 			t.Error("should not fire because value are the same.")
 		}
+		// current = 1, check = 2 => fire
 		if !trig.Check(cfg.Update) {
-			t.Error("should not fire because value are not the same.")
+			t.Error("should fire because value are not the same.")
 		}
-
+		// current = 2, check = 1 => not fire
+		if trig.Check(cfg.Value) {
+			t.Error("should not fire because value are the same.")
+		}
+		// current = 1, check = 2 => fire
+		if !trig.Check(cfg.Update) {
+			t.Error("should fire because value are not the same.")
+		}
 		//test update
 		trig.Update(cfg.Update)
 		if trig.Check(cfg.Update) {

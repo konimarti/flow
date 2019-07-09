@@ -264,11 +264,15 @@ type OnRisingFlank struct {
 
 //Check if new value is different from saved value.
 func (t *OnRisingFlank) Check(newValue interface{}) bool {
-	return GetFloat64(newValue) > GetFloat64(t.Value)
+	ret := false
+	if GetFloat64(newValue) > GetFloat64(t.Value) {
+		ret = true
+	}
+	t.Value = newValue
+	return ret
 }
 
 //Update updates stored value with new value and sends it to the observers.
 func (t *OnRisingFlank) Update(newValue interface{}) interface{} {
-	t.Value = newValue
 	return newValue
 }
